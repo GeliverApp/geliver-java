@@ -21,11 +21,17 @@ public class FullFlow {
         }});
 
         Shipment s = client.shipments().createTest(new HashMap<>() {{
-            put("sourceCode", "API"); put("senderAddressID", sender.get("id"));
+            put("senderAddressID", sender.get("id"));
             put("recipientAddress", new HashMap<>() {{
                 put("name", "John Doe"); put("email", "john@example.com"); put("address1", "Dest St 2");
                 put("countryCode", "TR"); put("cityName", "Istanbul"); put("cityCode", "34");
                 put("districtName", "Esenyurt"); put("districtID", 107605); put("zip", "34020");
+            }});
+            put("order", new HashMap<>() {{
+                put("orderNumber", "ABC12333322");
+                put("sourceIdentifier", "https://magazaadresiniz.com");
+                put("totalAmount", "150");
+                put("totalAmountCurrency", "TL");
             }});
             put("length", "10.0"); put("width", "10.0"); put("height", "10.0");
             put("distanceUnit", "cm"); put("weight", "1.0"); put("massUnit", "kg");
@@ -45,6 +51,12 @@ public class FullFlow {
 
         Transaction tx = client.transactions().acceptOffer(offers.getCheapest().getId());
         System.out.println("tx " + tx.getId() + " paid=" + tx.getIsPayed());
+        if (tx.getShipment() != null) {
+            System.out.println("Barcode: " + tx.getShipment().getBarcode());
+            System.out.println("Tracking number: " + tx.getShipment().getTrackingNumber());
+            System.out.println("Label URL: " + tx.getShipment().getLabelURL());
+            System.out.println("Tracking URL: " + tx.getShipment().getTrackingUrl());
+        }
         if (tx.getShipment() != null && tx.getShipment().getLabelURL() != null) {
             byte[] pdf = client.shipments().downloadLabelByUrl(tx.getShipment().getLabelURL());
             Files.write(Path.of("label-java.pdf"), pdf);
@@ -55,4 +67,3 @@ public class FullFlow {
         }
     }
 }
-

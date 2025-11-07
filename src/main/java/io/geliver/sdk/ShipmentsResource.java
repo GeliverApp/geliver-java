@@ -11,10 +11,29 @@ public class ShipmentsResource {
     private final GeliverClient c;
     ShipmentsResource(GeliverClient c) { this.c = c; }
 
-    public Shipment create(Map<String, Object> body) { return c.request("POST", "/shipments", null, body, Shipment.class); }
+    public Shipment create(Map<String, Object> body) {
+        Map<String,Object> copy = new HashMap<>(body == null ? Map.of() : body);
+        Object ov = copy.get("order");
+        if (ov instanceof Map<?,?> omap) {
+            @SuppressWarnings("unchecked") Map<String,Object> m = new HashMap<>((Map<String,Object>)omap);
+            if (!m.containsKey("sourceCode") || m.get("sourceCode") == null || String.valueOf(m.get("sourceCode")).isEmpty()) {
+                m.put("sourceCode", "API");
+            }
+            copy.put("order", m);
+        }
+        return c.request("POST", "/shipments", null, copy, Shipment.class);
+    }
 
     public Shipment createTest(Map<String, Object> body) {
         Map<String,Object> copy = new HashMap<>(body);
+        Object ov2 = copy.get("order");
+        if (ov2 instanceof Map<?,?> omap2) {
+            @SuppressWarnings("unchecked") Map<String,Object> m2 = new HashMap<>((Map<String,Object>)omap2);
+            if (!m2.containsKey("sourceCode") || m2.get("sourceCode") == null || String.valueOf(m2.get("sourceCode")).isEmpty()) {
+                m2.put("sourceCode", "API");
+            }
+            copy.put("order", m2);
+        }
         copy.put("test", true);
         // normalize dimension fields to String
         for (var k : new String[]{"length","width","height","weight"}) {
@@ -41,4 +60,3 @@ public class ShipmentsResource {
 
     private static String encode(String s) { return java.net.URLEncoder.encode(s, java.nio.charset.StandardCharsets.UTF_8); }
 }
-

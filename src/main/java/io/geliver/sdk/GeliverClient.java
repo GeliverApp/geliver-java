@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.io.IOException;
 import java.net.URI;
@@ -120,6 +121,56 @@ public class GeliverClient {
                     return mapper.treeToValue(data, outClass);
                 }
                 return mapper.readValue(text, outClass);
+            }
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    <T> T request(String method, String path, Map<String, Object> query, Object body, TypeReference<T> typeRef) {
+        try {
+            String url = baseUrl + path;
+            if (query != null && !query.isEmpty()) {
+                StringBuilder sb = new StringBuilder();
+                for (var e : query.entrySet()) {
+                    if (e.getValue() == null) continue;
+                    if (sb.length() > 0) sb.append('&');
+                    sb.append(URLEncoder.encode(e.getKey(), StandardCharsets.UTF_8))
+                      .append('=')
+                      .append(URLEncoder.encode(String.valueOf(e.getValue()), StandardCharsets.UTF_8));
+                }
+                if (sb.length() > 0) url += "?" + sb;
+            }
+            String bodyStr = null;
+            if (body != null) bodyStr = mapper.writeValueAsString(body);
+            HttpRequest.Builder rb = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .timeout(Duration.ofSeconds(30))
+                    .header("Authorization", "Bearer " + token)
+                    .header("Content-Type", "application/json");
+            switch (method) {
+                case "GET" -> rb.GET();
+                case "DELETE" -> rb.DELETE();
+                default -> rb.method(method, HttpRequest.BodyPublishers.ofString(bodyStr == null ? "" : bodyStr));
+            }
+            int attempt = 0;
+            while (true) {
+                HttpResponse<String> res = http.send(rb.build(), HttpResponse.BodyHandlers.ofString());
+                if (res.statusCode() >= 400) {
+                    if (shouldRetry(res.statusCode()) && attempt < maxRetries) {
+                        attempt++;
+                        backoff(attempt);
+                        continue;
+                    }
+                    throw new RuntimeException("HTTP " + res.statusCode());
+                }
+                String text = res.body() == null ? "{}" : res.body();
+                JsonNode root = mapper.readTree(text);
+                if (root.has("data")) {
+                    JsonNode data = root.get("data");
+                    return mapper.readValue(mapper.treeAsTokens(data), typeRef);
+                }
+                return mapper.readValue(text, typeRef);
             }
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);

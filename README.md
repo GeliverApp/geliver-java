@@ -30,7 +30,7 @@ public class QuickStart {
       put("districtName", "Esenyurt"); put("districtID", 107605); put("zip", "34020");
     }});
 
-    // Inline alıcı bilgileriyle test gönderisi oluşturma
+    // Inline alıcı bilgileriyle test gönderisi oluşturma. Canlı ortam için createTest yerine create fonksiyonunu kullanın.
     var shipment = client.shipments().createTest(new java.util.HashMap<>() {{
       put("sourceCode", "API"); put("senderAddressID", sender.get("id"));
       put("recipientAddress", new java.util.HashMap<>() {{
@@ -59,6 +59,14 @@ public class QuickStart {
 
     var tx = client.transactions().acceptOffer(offers.getCheapest().getId());
     System.out.println("Transaction: " + tx.getId() + " paid=" + tx.getIsPayed());
+    // Barcode, tracking number ve URL'ler Transaction içindeki Shipment'ta yer alır
+    if (tx.getShipment() != null) {
+      System.out.println("Barcode: " + tx.getShipment().getBarcode());
+      System.out.println("Tracking number: " + tx.getShipment().getTrackingNumber());
+      System.out.println("Label URL: " + tx.getShipment().getLabelURL());
+      //# Tracking URL (Kargo takip numarası) alanı bazı firmalarda gönderici şubesine teslimden veya kurye sizden teslim aldıktan sonra dolar. Bu sebeple webhook kullarak bu alanı almanız önerilir.
+      System.out.println("Tracking URL: " + tx.getShipment().getTrackingUrl());
+    }
 
     // Etiket indirme: Teklif kabulünden sonra (Transaction) gelen URL'leri kullanabilirsiniz de; URL'lere her shipment nesnesinin içinden ulaşılır.
     if (tx.getShipment() != null && tx.getShipment().getLabelURL() != null) {
@@ -70,7 +78,7 @@ public class QuickStart {
       java.nio.file.Files.writeString(java.nio.file.Path.of("label.html"), html);
     }
 
-    // Takip numarası işlemin hemen ardından her zaman oluşmayabilir; prod ortamında webhook kullanmanız önerilir.
+
   }
 }
 ```
@@ -85,27 +93,33 @@ public class QuickStart {
 ## Diğer Kaynaklar (Java)
 
 - Webhooklar
+
   - Oluştur: `client.webhooks().create("https://example.com/webhook", null)`
   - Listele: `client.webhooks().list()`
   - Sil: `client.webhooks().delete(webhookId)`
   - Test: `client.webhooks().test("price.updated", "https://example.com/webhook")`
 
 - Sağlayıcı Hesapları (Provider Accounts)
+
   - Listele: `client.providers().listAccounts()`
   - Oluştur: `client.providers().createAccount(Map.of("username","u","password","p","name","My","providerCode","SURAT","version",1))`
   - Sil: `client.providers().deleteAccount(id, true)`
 
 - Kargo Şablonları (Parcel Templates)
+
   - Oluştur: `client.parcelTemplates().create(Map.of("name","Small","distanceUnit","cm","massUnit","kg","height","4","length","4","weight","1","width","4"))`
   - Listele: `client.parcelTemplates().list()`
   - Sil: `client.parcelTemplates().delete(templateId)`
 
 - Fiyat Listesi
+
   - `client.prices().listPrices("parcel", "10.0","10.0","10.0","1.0","cm","kg")`
 
 - Coğrafi Veriler
-  - Şehirler: `client.geo().listCities("TR")`
-  - İlçeler: `client.geo().listDistricts("TR", "34")`
+
+  - Şehirler (typed): `client.geo().listCitiesTyped("TR") // List<City>`
+  - İlçeler (typed): `client.geo().listDistrictsTyped("TR", "34") // List<District>`
+  - İsterseniz Map listeleriyle de çalışabilirsiniz: `listCities`, `listDistricts`
 
 - Organizasyonlar
   - Bakiye: `client.organizations().getBalance(orgId)`
