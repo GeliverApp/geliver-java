@@ -88,7 +88,7 @@ public class QuickStart {
 - `length`, `width`, `height`, `weight` istek alanları string gönderilmelidir (örn. "10.0").
 - Barkod ve etiketler teklif kabulünden (Transaction) sonra üretilir; kabulün ardından URL'lerden indirebilirsiniz.
 - Takip numarası (trackingNumber) her zaman işlemin hemen ardından oluşmayabilir; prod ortamında webhookları kullanın.
-- İleride API'ye yeni alanlar eklense bile kütüphane bozunmaz: JSON ayrıştırıcı bilinmeyen alanları yoksayar.
+- İleride API'ye yeni alanlar eklense bile kütüphane bozulmaz: JSON ayrıştırıcı bilinmeyen alanları yoksayar.
 
 ## Diğer Kaynaklar (Java)
 
