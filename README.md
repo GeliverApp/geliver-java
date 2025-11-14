@@ -1,5 +1,7 @@
 # Geliver Java SDK
 
+[![Maven Central](https://img.shields.io/maven-central/v/io.geliver/geliver-java.svg)](https://central.sonatype.com/artifact/io.geliver/geliver-java)
+
 Resmi Java istemcisi (framework bağımsız). Java 17+ gerektirir. HTTP isteklerinde Java 11 `HttpClient` kullanır ve JSON için Jackson ile çalışır.
 
 - Dokümantasyon: https://docs.geliver.io
@@ -27,7 +29,7 @@ public class QuickStart {
     var sender = client.addresses().createSender(new java.util.HashMap<>() {{
       put("name", "ACME Inc."); put("email", "ops@acme.test"); put("address1", "Street 1");
       put("countryCode", "TR"); put("cityName", "Istanbul"); put("cityCode", "34");
-      put("districtName", "Esenyurt"); put("districtID", 107605); put("zip", "34020");
+      put("districtName", "Esenyurt"); put("zip", "34020");
     }});
 
     // Inline alıcı bilgileriyle test gönderisi oluşturma. Canlı ortam için createTest yerine create fonksiyonunu kullanın.
@@ -37,14 +39,14 @@ public class QuickStart {
         put("name", "John Doe"); put("email", "john@example.com");
         put("address1", "Dest St 2"); put("countryCode", "TR");
         put("cityName", "Istanbul"); put("cityCode", "34");
-        put("districtName", "Esenyurt"); put("districtID", 107605); put("zip", "34020");
+        put("districtName", "Esenyurt"); put("zip", "34020");
       }});
       // İstek alanları string olmalıdır
       put("length", "10.0"); put("width", "10.0"); put("height", "10.0");
       put("distanceUnit", "cm"); put("weight", "1.0"); put("massUnit", "kg");
     }});
 
-    // Teklifler create yanıtında hazır olabilir; >=%99 olana kadar bekleyin
+    // Teklifler create yanıtında hazır olabilir; %100 olana kadar bekleyin
     var offers = shipment.getOffers();
     if (offers == null || !offers.isReady()) {
       long start = System.currentTimeMillis();
@@ -89,6 +91,51 @@ public class QuickStart {
 - Barkod ve etiketler teklif kabulünden (Transaction) sonra üretilir; kabulün ardından URL'lerden indirebilirsiniz.
 - Takip numarası (trackingNumber) her zaman işlemin hemen ardından oluşmayabilir; prod ortamında webhookları kullanın.
 - İleride API'ye yeni alanlar eklense bile kütüphane bozulmaz: JSON ayrıştırıcı bilinmeyen alanları yoksayar.
+- Adres kuralları: phone alanı hem gönderici hem alıcı adresleri için zorunludur. Zip alanı gönderici adresi için zorunludur; alıcı adresi için opsiyoneldir. `addresses().createSender(...)` phone/zip eksikse, `addresses().createRecipient(...)` phone eksikse hata verir.
+
+## Örnekler
+
+- Full flow: `sdks/java/src/main/java/io/geliver/examples/FullFlow.java`
+- Tek aşamada gönderi (Create Transaction):
+
+```java
+var tx = client.transactions().create(new java.util.HashMap<>() {{
+  put("senderAddressID", sender.get("id"));
+  put("recipientAddress", new java.util.HashMap<>() {{
+    put("name","OneStep Recipient"); put("address1","Dest 2"); put("countryCode","TR"); put("cityName","Istanbul"); put("cityCode","34"); put("districtName","Esenyurt");
+  }});
+  put("length","10.0"); put("width","10.0"); put("height","10.0"); put("distanceUnit","cm"); put("weight","1.0"); put("massUnit","kg");
+}});
+```
+
+- Kapıda ödeme:
+
+```java
+var txPod = client.transactions().create(new java.util.HashMap<>() {{
+  put("senderAddressID", sender.get("id"));
+  put("recipientAddress", new java.util.HashMap<>() {{
+    put("name","POD Recipient"); put("address1","Dest 2"); put("countryCode","TR"); put("cityName","Istanbul"); put("cityCode","34"); put("districtName","Esenyurt");
+  }});
+  put("length","10.0"); put("width","10.0"); put("height","10.0"); put("distanceUnit","cm"); put("weight","1.0"); put("massUnit","kg");
+  put("providerServiceCode","PTT_KAPIDA_ODEME");
+  put("productPaymentOnDelivery", true);
+  put("order", new java.util.HashMap<>() {{ put("orderNumber","POD-12345"); put("totalAmount","150"); put("totalAmountCurrency","TL"); }});
+}});
+```
+
+- Kendi anlaşmanızla etiket satın alma:
+
+```java
+var txOwn = client.transactions().create(new java.util.HashMap<>() {{
+  put("senderAddressID", sender.get("id"));
+  put("recipientAddress", new java.util.HashMap<>() {{
+    put("name","OwnAg Recipient"); put("address1","Dest 2"); put("countryCode","TR"); put("cityName","Istanbul"); put("cityCode","34"); put("districtName","Esenyurt");
+  }});
+  put("length","10.0"); put("width","10.0"); put("height","10.0"); put("distanceUnit","cm"); put("weight","1.0"); put("massUnit","kg");
+  put("providerServiceCode","SURAT_STANDART");
+  put("providerAccountID","c0dfdb42-012d-438c-9d49-98d13b4d4a2b");
+}});
+```
 
 ## Diğer Kaynaklar (Java)
 

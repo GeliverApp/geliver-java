@@ -13,6 +13,11 @@ public class ShipmentsResource {
 
     public Shipment create(Map<String, Object> body) {
         Map<String,Object> copy = new HashMap<>(body == null ? Map.of() : body);
+        Object rv = copy.get("recipientAddress");
+        if (rv instanceof Map<?,?> rmap) {
+            Object ph = rmap.get("phone");
+            if (ph == null || String.valueOf(ph).isBlank()) throw new IllegalArgumentException("recipientAddress.phone is required");
+        }
         Object ov = copy.get("order");
         if (ov instanceof Map<?,?> omap) {
             @SuppressWarnings("unchecked") Map<String,Object> m = new HashMap<>((Map<String,Object>)omap);
