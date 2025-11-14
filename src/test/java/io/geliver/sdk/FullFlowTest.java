@@ -22,7 +22,7 @@ public class FullFlowTest {
         Map<String,Object> sender = client.addresses().createSender(new HashMap<>() {{
             put("name", "ACME Inc."); put("email", "ops@acme.test"); put("address1", "Street 1");
             put("countryCode", "TR"); put("cityName", "Istanbul"); put("cityCode", "34");
-            put("districtName", "Esenyurt"); put("districtID", 107605); put("zip", "34020");
+            put("districtName", "Esenyurt"); put("zip", "34020");
         }});
         assertNotNull(sender.get("id"));
 
@@ -31,7 +31,7 @@ public class FullFlowTest {
             put("recipientAddress", new HashMap<>() {{
                 put("name", "John Doe"); put("email", "john@example.com"); put("address1", "Dest St 2");
                 put("countryCode", "TR"); put("cityName", "Istanbul"); put("cityCode", "34");
-                put("districtName", "Esenyurt"); put("districtID", 107605); put("zip", "34020");
+                put("districtName", "Esenyurt"); put("zip", "34020");
             }});
             put("length", "10.0"); put("width", "10.0"); put("height", "10.0");
             put("distanceUnit", "cm"); put("weight", "1.0"); put("massUnit", "kg");
@@ -57,4 +57,3 @@ public class FullFlowTest {
         }
     }
 }
-

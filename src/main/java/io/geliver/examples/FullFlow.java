@@ -17,7 +17,7 @@ public class FullFlow {
         Map<String,Object> sender = client.addresses().createSender(new HashMap<>() {{
             put("name", "ACME Inc."); put("email", "ops@acme.test"); put("address1", "Street 1");
             put("countryCode", "TR"); put("cityName", "Istanbul"); put("cityCode", "34");
-            put("districtName", "Esenyurt"); put("districtID", 107605); put("zip", "34020");
+            put("districtName", "Esenyurt"); put("zip", "34020");
         }});
 
         Shipment s = client.shipments().createTest(new HashMap<>() {{
@@ -25,7 +25,7 @@ public class FullFlow {
             put("recipientAddress", new HashMap<>() {{
                 put("name", "John Doe"); put("email", "john@example.com"); put("address1", "Dest St 2");
                 put("countryCode", "TR"); put("cityName", "Istanbul"); put("cityCode", "34");
-                put("districtName", "Esenyurt"); put("districtID", 107605); put("zip", "34020");
+                put("districtName", "Esenyurt"); put("zip", "34020");
             }});
             put("order", new HashMap<>() {{
                 put("orderNumber", "ABC12333322");
@@ -49,7 +49,20 @@ public class FullFlow {
             }
         }
 
-        Transaction tx = client.transactions().acceptOffer(offers.getCheapest().getId());
+        if (offers.getCheapest() == null) {
+            System.err.println("Error: No cheapest offer available");
+            System.exit(1);
+        }
+
+        Transaction tx;
+        try {
+            tx = client.transactions().acceptOffer(offers.getCheapest().getId());
+        } catch (Exception e) {
+            System.err.println("Accept offer error: " + e.getMessage());
+            e.printStackTrace();
+            System.exit(1);
+            return; // For compiler
+        }
         System.out.println("tx " + tx.getId() + " paid=" + tx.getIsPayed());
         if (tx.getShipment() != null) {
             System.out.println("Barcode: " + tx.getShipment().getBarcode());
@@ -57,13 +70,32 @@ public class FullFlow {
             System.out.println("Label URL: " + tx.getShipment().getLabelURL());
             System.out.println("Tracking URL: " + tx.getShipment().getTrackingUrl());
         }
-        if (tx.getShipment() != null && tx.getShipment().getLabelURL() != null) {
-            byte[] pdf = client.shipments().downloadLabelByUrl(tx.getShipment().getLabelURL());
-            Files.write(Path.of("label-java.pdf"), pdf);
-        }
-        if (tx.getShipment() != null && tx.getShipment().getResponsiveLabelURL() != null) {
-            String html = client.shipments().downloadResponsiveLabelByUrl(tx.getShipment().getResponsiveLabelURL());
-            Files.writeString(Path.of("label-java.html"), html);
+
+        // Etiket indirme: LabelFileType kontrolü
+        // Eğer LabelFileType "PROVIDER_PDF" ise, LabelURL'den indirilen PDF etiket kullanılmalıdır.
+        // Eğer LabelFileType "PDF" ise, responsiveLabelURL (HTML) dosyası kullanılabilir.
+        if (tx.getShipment() != null) {
+            String labelFileType = tx.getShipment().getLabelFileType();
+            if ("PROVIDER_PDF".equals(labelFileType)) {
+                // PROVIDER_PDF: Sadece PDF etiket kullanılmalı
+                if (tx.getShipment().getLabelURL() != null) {
+                    byte[] pdf = client.shipments().downloadLabelByUrl(tx.getShipment().getLabelURL());
+                    Files.write(Path.of("label-java.pdf"), pdf);
+                    System.out.println("PDF etiket indirildi (PROVIDER_PDF)");
+                }
+            } else if ("PDF".equals(labelFileType)) {
+                // PDF: ResponsiveLabel (HTML) kullanılabilir
+                if (tx.getShipment().getResponsiveLabelURL() != null) {
+                    String html = client.shipments().downloadResponsiveLabelByUrl(tx.getShipment().getResponsiveLabelURL());
+                    Files.writeString(Path.of("label-java.html"), html);
+                    System.out.println("HTML etiket indirildi (PDF)");
+                }
+                // İsteğe bağlı olarak PDF de indirilebilir
+                if (tx.getShipment().getLabelURL() != null) {
+                    byte[] pdf = client.shipments().downloadLabelByUrl(tx.getShipment().getLabelURL());
+                    Files.write(Path.of("label-java.pdf"), pdf);
+                }
+            }
         }
     }
 }

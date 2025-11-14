@@ -11,15 +11,31 @@ public class OfferList {
     private Offer cheapest;
     private List<Offer> list;
 
-    public BigDecimal getPercentageCompleted() { return percentageCompleted; }
-    public void setPercentageCompleted(BigDecimal percentageCompleted) { this.percentageCompleted = percentageCompleted; }
-    public Offer getCheapest() { return cheapest; }
-    public void setCheapest(Offer cheapest) { this.cheapest = cheapest; }
-    public List<Offer> getList() { return list; }
-    public void setList(List<Offer> list) { this.list = list; }
+    public BigDecimal getPercentageCompleted() {
+        return percentageCompleted;
+    }
+
+    public void setPercentageCompleted(BigDecimal percentageCompleted) {
+        this.percentageCompleted = percentageCompleted;
+    }
+
+    public Offer getCheapest() {
+        return cheapest;
+    }
+
+    public void setCheapest(Offer cheapest) {
+        this.cheapest = cheapest;
+    }
+
+    public List<Offer> getList() {
+        return list;
+    }
+
+    public void setList(List<Offer> list) {
+        this.list = list;
+    }
 
     public boolean isReady() {
-        return (percentageCompleted != null && percentageCompleted.doubleValue() >= 99.0) || cheapest != null;
+        return (percentageCompleted != null && percentageCompleted.doubleValue() == 100.0) || cheapest != null;
     }
 }
-

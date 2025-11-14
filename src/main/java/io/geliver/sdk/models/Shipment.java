@@ -8,6 +8,7 @@ public class Shipment {
     private String barcode;
     private String labelURL;
     private String responsiveLabelURL;
+    private String labelFileType;
     private String trackingNumber;
     private String trackingUrl;
     private OfferList offers;
@@ -20,6 +21,8 @@ public class Shipment {
     public void setLabelURL(String labelURL) { this.labelURL = labelURL; }
     public String getResponsiveLabelURL() { return responsiveLabelURL; }
     public void setResponsiveLabelURL(String responsiveLabelURL) { this.responsiveLabelURL = responsiveLabelURL; }
+    public String getLabelFileType() { return labelFileType; }
+    public void setLabelFileType(String labelFileType) { this.labelFileType = labelFileType; }
     public String getTrackingNumber() { return trackingNumber; }
     public void setTrackingNumber(String trackingNumber) { this.trackingNumber = trackingNumber; }
     public String getTrackingUrl() { return trackingUrl; }

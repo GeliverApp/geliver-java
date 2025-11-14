@@ -104,21 +104,32 @@ public class GeliverClient {
             int attempt = 0;
             while (true) {
                 HttpResponse<String> res = http.send(rb.build(), HttpResponse.BodyHandlers.ofString());
+                String text = res.body() == null ? "{}" : res.body();
+                JsonNode root;
+                try { root = mapper.readTree(text); } catch (Exception e) { root = null; }
                 if (res.statusCode() >= 400) {
                     if (shouldRetry(res.statusCode()) && attempt < maxRetries) {
                         attempt++;
                         backoff(attempt);
                         continue;
                     }
-                    throw new RuntimeException("HTTP " + res.statusCode());
+                    String code = root != null && root.has("code") ? root.get("code").asText(null) : null;
+                    String msg = root != null && root.has("message") ? root.get("message").asText("HTTP " + res.statusCode()) : ("HTTP " + res.statusCode());
+                    String addl = root != null && root.has("additionalMessage") ? root.get("additionalMessage").asText(null) : null;
+                    throw new GeliverApiException(msg, res.statusCode(), code, addl, root);
                 }
                 if (outClass == null) return null;
-                String text = res.body() == null ? "{}" : res.body();
-                // unwrap envelope if present
-                JsonNode root = mapper.readTree(text);
-                if (root.has("data")) {
-                    JsonNode data = root.get("data");
-                    return mapper.treeToValue(data, outClass);
+                // unwrap envelope if present and result
+                if (root != null && (root.has("result") || root.has("data"))) {
+                    if (root.has("result") && root.get("result").isBoolean() && !root.get("result").asBoolean()) {
+                        String code = root.has("code") ? root.get("code").asText(null) : null;
+                        String msg = root.has("message") ? root.get("message").asText("API error") : "API error";
+                        String addl = root.has("additionalMessage") ? root.get("additionalMessage").asText(null) : null;
+                        throw new GeliverApiException(msg, res.statusCode(), code, addl, root);
+                    }
+                    if (root.has("data")) {
+                        return mapper.treeToValue(root.get("data"), outClass);
+                    }
                 }
                 return mapper.readValue(text, outClass);
             }
@@ -156,19 +167,31 @@ public class GeliverClient {
             int attempt = 0;
             while (true) {
                 HttpResponse<String> res = http.send(rb.build(), HttpResponse.BodyHandlers.ofString());
+                String text = res.body() == null ? "{}" : res.body();
+                JsonNode root;
+                try { root = mapper.readTree(text); } catch (Exception e) { root = null; }
                 if (res.statusCode() >= 400) {
                     if (shouldRetry(res.statusCode()) && attempt < maxRetries) {
                         attempt++;
                         backoff(attempt);
                         continue;
                     }
-                    throw new RuntimeException("HTTP " + res.statusCode());
+                    String code = root != null && root.has("code") ? root.get("code").asText(null) : null;
+                    String msg = root != null && root.has("message") ? root.get("message").asText("HTTP " + res.statusCode()) : ("HTTP " + res.statusCode());
+                    String addl = root != null && root.has("additionalMessage") ? root.get("additionalMessage").asText(null) : null;
+                    throw new GeliverApiException(msg, res.statusCode(), code, addl, root);
                 }
-                String text = res.body() == null ? "{}" : res.body();
-                JsonNode root = mapper.readTree(text);
-                if (root.has("data")) {
-                    JsonNode data = root.get("data");
-                    return mapper.readValue(mapper.treeAsTokens(data), typeRef);
+                if (root != null && (root.has("result") || root.has("data"))) {
+                    if (root.has("result") && root.get("result").isBoolean() && !root.get("result").asBoolean()) {
+                        String code = root.has("code") ? root.get("code").asText(null) : null;
+                        String msg = root.has("message") ? root.get("message").asText("API error") : "API error";
+                        String addl = root.has("additionalMessage") ? root.get("additionalMessage").asText(null) : null;
+                        throw new GeliverApiException(msg, res.statusCode(), code, addl, root);
+                    }
+                    if (root.has("data")) {
+                        JsonNode data = root.get("data");
+                        return mapper.readValue(mapper.treeAsTokens(data), typeRef);
+                    }
                 }
                 return mapper.readValue(text, typeRef);
             }
@@ -202,5 +225,19 @@ public class GeliverClient {
     static boolean shouldRetry(int status) { return status == 429 || status >= 500; }
     static void backoff(int attempt) {
         try { Thread.sleep(Math.min(2000, 200 * (1 << (attempt - 1)))); } catch (InterruptedException ignored) {}
+    }
+}
+
+class GeliverApiException extends RuntimeException {
+    public final Integer status;
+    public final String code;
+    public final String additionalMessage;
+    public final JsonNode body;
+    public GeliverApiException(String message, Integer status, String code, String additionalMessage, JsonNode body) {
+        super(message);
+        this.status = status;
+        this.code = code;
+        this.additionalMessage = additionalMessage;
+        this.body = body;
     }
 }
