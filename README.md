@@ -179,3 +179,21 @@ mvn -q -Dtest=FullFlowTest -DfailIfNoTests=false test
 # ya da örnek ana sınıf:
 mvn -q -Dexec.mainClass=io.geliver.examples.FullFlow exec:java
 ```
+
+---
+
+## Hatalar ve İstisnalar
+
+- İstemci şu durumlarda `GeliverApiException` fırlatır: (1) HTTP 4xx/5xx; (2) JSON envelope `result == false`.
+- Hata alanları: `code`, `additionalMessage`, `status`, `body`, `message`.
+
+```java
+try {
+  client.shipments().create(Map.of(/* ... */));
+} catch (io.geliver.sdk.GeliverApiException e) {
+  System.err.println("code: " + e.code);
+  System.err.println("message: " + e.getMessage());
+  System.err.println("additional: " + e.additionalMessage);
+  System.err.println("status: " + e.status);
+}
+```
