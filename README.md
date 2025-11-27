@@ -46,17 +46,14 @@ public class QuickStart {
       put("distanceUnit", "cm"); put("weight", "1.0"); put("massUnit", "kg");
     }});
 
-    // Teklifler create yanıtında hazır olabilir; %100 olana kadar bekleyin
+    // Teklifler create yanıtında yoksa tek bir GET ile güncel shipment alın
     var offers = shipment.getOffers();
-    if (offers == null || !offers.isReady()) {
-      long start = System.currentTimeMillis();
-      while (true) {
-        var s = client.shipments().get(shipment.getId());
-        offers = s.getOffers();
-        if (offers != null && offers.isReady()) break;
-        if (System.currentTimeMillis() - start > 60000) throw new RuntimeException("Timed out");
-        Thread.sleep(1000);
-      }
+    if (offers == null || offers.getCheapest() == null) {
+      shipment = client.shipments().get(shipment.getId());
+      offers = shipment.getOffers();
+    }
+    if (offers == null || offers.getCheapest() == null) {
+      throw new RuntimeException("Teklifler hazır değil; GET /shipments ile tekrar kontrol edin.");
     }
 
     var tx = client.transactions().acceptOffer(offers.getCheapest().getId());

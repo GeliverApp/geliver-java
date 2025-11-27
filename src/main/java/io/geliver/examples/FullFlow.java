@@ -38,18 +38,12 @@ public class FullFlow {
         }});
 
         var offers = s.getOffers();
-        if (offers == null || !offers.isReady()) {
-            long start = System.currentTimeMillis();
-            while (true) {
-                var s2 = client.shipments().get(s.getId());
-                offers = s2.getOffers();
-                if (offers != null && offers.isReady()) break;
-                if (System.currentTimeMillis() - start > 60000) throw new RuntimeException("Timed out waiting offers");
-                Thread.sleep(1000);
-            }
+        if (offers == null || offers.getCheapest() == null) {
+            var refreshed = client.shipments().get(s.getId());
+            offers = refreshed.getOffers();
         }
 
-        if (offers.getCheapest() == null) {
+        if (offers == null || offers.getCheapest() == null) {
             System.err.println("Error: No cheapest offer available");
             System.exit(1);
         }
