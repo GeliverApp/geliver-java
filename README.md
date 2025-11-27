@@ -46,12 +46,8 @@ public class QuickStart {
       put("distanceUnit", "cm"); put("weight", "1.0"); put("massUnit", "kg");
     }});
 
-    // Teklifler create yanıtında yoksa tek bir GET ile güncel shipment alın
+    // Teklifler create yanıtındaki offers alanında gelir
     var offers = shipment.getOffers();
-    if (offers == null || offers.getCheapest() == null) {
-      shipment = client.shipments().get(shipment.getId());
-      offers = shipment.getOffers();
-    }
     if (offers == null || offers.getCheapest() == null) {
       throw new RuntimeException("Teklifler hazır değil; GET /shipments ile tekrar kontrol edin.");
     }

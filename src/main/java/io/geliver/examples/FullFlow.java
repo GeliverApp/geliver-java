@@ -39,11 +39,6 @@ public class FullFlow {
 
         var offers = s.getOffers();
         if (offers == null || offers.getCheapest() == null) {
-            var refreshed = client.shipments().get(s.getId());
-            offers = refreshed.getOffers();
-        }
-
-        if (offers == null || offers.getCheapest() == null) {
             System.err.println("Error: No cheapest offer available");
             System.exit(1);
         }
