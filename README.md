@@ -10,7 +10,6 @@ Resmi Java istemcisi (framework bağımsız). Java 17+ gerektirir. HTTP istekler
 ## Kurulum (yerel)
 
 ```bash
-cd sdks/java
 mvn -q -DskipTests package
 ```
 
@@ -44,6 +43,13 @@ public class QuickStart {
       // İstek alanları string olmalıdır
       put("length", "10.0"); put("width", "10.0"); put("height", "10.0");
       put("distanceUnit", "cm"); put("weight", "1.0"); put("massUnit", "kg");
+      put("order", new java.util.HashMap<>() {{
+        put("orderNumber", "WEB-12345");
+        // sourceIdentifier alanına mağazanızın tam adresini (ör. https://magazam.com) ekleyin.
+        put("sourceIdentifier", "https://magazam.com");
+        put("totalAmount", "150");
+        put("totalAmountCurrency", "TRY");
+      }});
     }});
 
     // Teklifler create yanıtındaki offers alanında gelir
@@ -88,7 +94,7 @@ public class QuickStart {
 
 ## Örnekler
 
-- Full flow: `sdks/java/src/main/java/io/geliver/examples/FullFlow.java`
+- Full flow: `src/main/java/io/geliver/examples/FullFlow.java`
 - Tek aşamada gönderi (Create Transaction):
 
 ```java
@@ -139,7 +145,7 @@ var txOwn = client.transactions().create(new java.util.HashMap<>() {{
   - Sil: `client.webhooks().delete(webhookId)`
   - Test: `client.webhooks().test("price.updated", "https://example.com/webhook")`
 
-- Sağlayıcı Hesapları (Provider Accounts)
+- Kendi Kargo Anlaşmanız (Provider Accounts)
 
   - Listele: `client.providers().listAccounts()`
   - Oluştur: `client.providers().createAccount(Map.of("username","u","password","p","name","My","providerCode","SURAT","version",1))`
