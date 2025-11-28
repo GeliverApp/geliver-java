@@ -47,7 +47,7 @@ public class FullFlow {
                         put("orderNumber", "ABC12333322");
                         put("sourceIdentifier", "https://magazaadresiniz.com");
                         put("totalAmount", "150");
-                        put("totalAmountCurrency", "TL");
+                        put("totalAmountCurrency", "TRY");
                     }
                 });
                 put("length", "10.0");

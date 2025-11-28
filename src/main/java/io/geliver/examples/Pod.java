@@ -52,7 +52,7 @@ public class Pod {
           {
             put("orderNumber", "POD-12345");
             put("totalAmount", "150");
-            put("totalAmountCurrency", "TL");
+            put("totalAmountCurrency", "TRY");
           }
         });
       }

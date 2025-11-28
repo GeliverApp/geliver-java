@@ -118,7 +118,7 @@ var txPod = client.transactions().create(new java.util.HashMap<>() {{
   put("length","10.0"); put("width","10.0"); put("height","10.0"); put("distanceUnit","cm"); put("weight","1.0"); put("massUnit","kg");
   put("providerServiceCode","PTT_KAPIDA_ODEME");
   put("productPaymentOnDelivery", true);
-  put("order", new java.util.HashMap<>() {{ put("orderNumber","POD-12345"); put("totalAmount","150"); put("totalAmountCurrency","TL"); }});
+  put("order", new java.util.HashMap<>() {{ put("orderNumber","POD-12345"); put("totalAmount","150"); put("totalAmountCurrency","TRY"); }});
 }});
 ```
 
