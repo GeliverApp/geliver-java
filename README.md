@@ -27,7 +27,7 @@ public class QuickStart {
 
     // Gönderici adresi oluşturma (tek seferlik). ID'yi saklayıp tekrar kullanın.
     var sender = client.addresses().createSender(new java.util.HashMap<>() {{
-      put("name", "ACME Inc."); put("email", "ops@acme.test"); put("address1", "Street 1");
+      put("name", "ACME Inc."); put("email", "ops@acme.test"); put("address1", "Hasan Mahallesi");
       put("countryCode", "TR"); put("cityName", "Istanbul"); put("cityCode", "34");
       put("districtName", "Esenyurt"); put("zip", "34020");
     }});
