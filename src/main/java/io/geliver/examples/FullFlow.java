@@ -14,28 +14,50 @@ public class FullFlow {
         var token = System.getenv().getOrDefault("GELIVER_TOKEN", "YOUR_TOKEN");
         var client = new GeliverClient(token);
 
-        Map<String,Object> sender = client.addresses().createSender(new HashMap<>() {{
-            put("name", "ACME Inc."); put("email", "ops@acme.test"); put("address1", "Street 1");
-            put("countryCode", "TR"); put("cityName", "Istanbul"); put("cityCode", "34");
-            put("districtName", "Esenyurt"); put("zip", "34020");
-        }});
+        Map<String, Object> sender = client.addresses().createSender(new HashMap<>() {
+            {
+                put("name", "ACME Inc.");
+                put("email", "ops@acme.test");
+                put("address1", "Hasan Mahallesi");
+                put("countryCode", "TR");
+                put("cityName", "Istanbul");
+                put("cityCode", "34");
+                put("districtName", "Esenyurt");
+                put("zip", "34020");
+            }
+        });
 
-        Shipment s = client.shipments().createTest(new HashMap<>() {{
-            put("senderAddressID", sender.get("id"));
-            put("recipientAddress", new HashMap<>() {{
-                put("name", "John Doe"); put("email", "john@example.com"); put("address1", "Dest St 2");
-                put("countryCode", "TR"); put("cityName", "Istanbul"); put("cityCode", "34");
-                put("districtName", "Esenyurt"); put("zip", "34020");
-            }});
-            put("order", new HashMap<>() {{
-                put("orderNumber", "ABC12333322");
-                put("sourceIdentifier", "https://magazaadresiniz.com");
-                put("totalAmount", "150");
-                put("totalAmountCurrency", "TL");
-            }});
-            put("length", "10.0"); put("width", "10.0"); put("height", "10.0");
-            put("distanceUnit", "cm"); put("weight", "1.0"); put("massUnit", "kg");
-        }});
+        Shipment s = client.shipments().createTest(new HashMap<>() {
+            {
+                put("senderAddressID", sender.get("id"));
+                put("recipientAddress", new HashMap<>() {
+                    {
+                        put("name", "John Doe");
+                        put("email", "john@example.com");
+                        put("address1", "Dest St 2");
+                        put("countryCode", "TR");
+                        put("cityName", "Istanbul");
+                        put("cityCode", "34");
+                        put("districtName", "Esenyurt");
+                        put("zip", "34020");
+                    }
+                });
+                put("order", new HashMap<>() {
+                    {
+                        put("orderNumber", "ABC12333322");
+                        put("sourceIdentifier", "https://magazaadresiniz.com");
+                        put("totalAmount", "150");
+                        put("totalAmountCurrency", "TL");
+                    }
+                });
+                put("length", "10.0");
+                put("width", "10.0");
+                put("height", "10.0");
+                put("distanceUnit", "cm");
+                put("weight", "1.0");
+                put("massUnit", "kg");
+            }
+        });
 
         var offers = s.getOffers();
         if (offers == null || offers.getCheapest() == null) {
@@ -61,8 +83,10 @@ public class FullFlow {
         }
 
         // Etiket indirme: LabelFileType kontrolü
-        // Eğer LabelFileType "PROVIDER_PDF" ise, LabelURL'den indirilen PDF etiket kullanılmalıdır.
-        // Eğer LabelFileType "PDF" ise, responsiveLabelURL (HTML) dosyası kullanılabilir.
+        // Eğer LabelFileType "PROVIDER_PDF" ise, LabelURL'den indirilen PDF etiket
+        // kullanılmalıdır.
+        // Eğer LabelFileType "PDF" ise, responsiveLabelURL (HTML) dosyası
+        // kullanılabilir.
         if (tx.getShipment() != null) {
             String labelFileType = tx.getShipment().getLabelFileType();
             if ("PROVIDER_PDF".equals(labelFileType)) {
@@ -75,7 +99,8 @@ public class FullFlow {
             } else if ("PDF".equals(labelFileType)) {
                 // PDF: ResponsiveLabel (HTML) kullanılabilir
                 if (tx.getShipment().getResponsiveLabelURL() != null) {
-                    String html = client.shipments().downloadResponsiveLabelByUrl(tx.getShipment().getResponsiveLabelURL());
+                    String html = client.shipments()
+                            .downloadResponsiveLabelByUrl(tx.getShipment().getResponsiveLabelURL());
                     Files.writeString(Path.of("label-java.html"), html);
                     System.out.println("HTML etiket indirildi (PDF)");
                 }

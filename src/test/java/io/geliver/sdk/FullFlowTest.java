@@ -19,23 +19,44 @@ public class FullFlowTest {
         Assumptions.assumeTrue(token != null && !token.isBlank(), "GELIVER_TOKEN not set; skipping");
         GeliverClient client = new GeliverClient(token);
 
-        Map<String,Object> sender = client.addresses().createSender(new HashMap<>() {{
-            put("name", "ACME Inc."); put("email", "ops@acme.test"); put("address1", "Street 1");
-            put("countryCode", "TR"); put("cityName", "Istanbul"); put("cityCode", "34");
-            put("districtName", "Esenyurt"); put("zip", "34020");
-        }});
+        Map<String, Object> sender = client.addresses().createSender(new HashMap<>() {
+            {
+                put("name", "ACME Inc.");
+                put("email", "ops@acme.test");
+                put("address1", "Hasan Mahallesi");
+                put("countryCode", "TR");
+                put("cityName", "Istanbul");
+                put("cityCode", "34");
+                put("districtName", "Esenyurt");
+                put("zip", "34020");
+            }
+        });
         assertNotNull(sender.get("id"));
 
-        Shipment s = client.shipments().createTest(new HashMap<>() {{
-            put("sourceCode", "API"); put("senderAddressID", sender.get("id"));
-            put("recipientAddress", new HashMap<>() {{
-                put("name", "John Doe"); put("email", "john@example.com"); put("address1", "Dest St 2");
-                put("countryCode", "TR"); put("cityName", "Istanbul"); put("cityCode", "34");
-                put("districtName", "Esenyurt"); put("zip", "34020");
-            }});
-            put("length", "10.0"); put("width", "10.0"); put("height", "10.0");
-            put("distanceUnit", "cm"); put("weight", "1.0"); put("massUnit", "kg");
-        }});
+        Shipment s = client.shipments().createTest(new HashMap<>() {
+            {
+                put("sourceCode", "API");
+                put("senderAddressID", sender.get("id"));
+                put("recipientAddress", new HashMap<>() {
+                    {
+                        put("name", "John Doe");
+                        put("email", "john@example.com");
+                        put("address1", "Dest St 2");
+                        put("countryCode", "TR");
+                        put("cityName", "Istanbul");
+                        put("cityCode", "34");
+                        put("districtName", "Esenyurt");
+                        put("zip", "34020");
+                    }
+                });
+                put("length", "10.0");
+                put("width", "10.0");
+                put("height", "10.0");
+                put("distanceUnit", "cm");
+                put("weight", "1.0");
+                put("massUnit", "kg");
+            }
+        });
         assertNotNull(s.getId());
 
         var offers = s.getOffers();
@@ -43,7 +64,8 @@ public class FullFlowTest {
         while (offers == null || !offers.isReady()) {
             s = client.shipments().get(s.getId());
             offers = s.getOffers();
-            if (System.currentTimeMillis() - start > 60000) fail("Timed out waiting for offers");
+            if (System.currentTimeMillis() - start > 60000)
+                fail("Timed out waiting for offers");
             Thread.sleep(1000);
         }
 
