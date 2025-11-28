@@ -37,7 +37,7 @@ public class QuickStart {
       put("sourceCode", "API"); put("senderAddressID", sender.get("id"));
       put("recipientAddress", new java.util.HashMap<>() {{
         put("name", "John Doe"); put("email", "john@example.com");
-        put("address1", "Dest St 2"); put("countryCode", "TR");
+        put("address1", "Atatürk Mahallesi"); put("countryCode", "TR");
         put("cityName", "Istanbul"); put("cityCode", "34");
         put("districtName", "Esenyurt"); put("zip", "34020");
       }});
@@ -95,7 +95,7 @@ public class QuickStart {
 var tx = client.transactions().create(new java.util.HashMap<>() {{
   put("senderAddressID", sender.get("id"));
   put("recipientAddress", new java.util.HashMap<>() {{
-    put("name","OneStep Recipient"); put("address1","Dest 2"); put("countryCode","TR"); put("cityName","Istanbul"); put("cityCode","34"); put("districtName","Esenyurt");
+    put("name","OneStep Recipient"); put("address1","Atatürk Mahallesi"); put("countryCode","TR"); put("cityName","Istanbul"); put("cityCode","34"); put("districtName","Esenyurt");
   }});
   put("length","10.0"); put("width","10.0"); put("height","10.0"); put("distanceUnit","cm"); put("weight","1.0"); put("massUnit","kg");
 }});
@@ -107,7 +107,7 @@ var tx = client.transactions().create(new java.util.HashMap<>() {{
 var txPod = client.transactions().create(new java.util.HashMap<>() {{
   put("senderAddressID", sender.get("id"));
   put("recipientAddress", new java.util.HashMap<>() {{
-    put("name","POD Recipient"); put("address1","Dest 2"); put("countryCode","TR"); put("cityName","Istanbul"); put("cityCode","34"); put("districtName","Esenyurt");
+    put("name","POD Recipient"); put("address1","Atatürk Mahallesi"); put("countryCode","TR"); put("cityName","Istanbul"); put("cityCode","34"); put("districtName","Esenyurt");
   }});
   put("length","10.0"); put("width","10.0"); put("height","10.0"); put("distanceUnit","cm"); put("weight","1.0"); put("massUnit","kg");
   put("providerServiceCode","PTT_KAPIDA_ODEME");
@@ -122,7 +122,7 @@ var txPod = client.transactions().create(new java.util.HashMap<>() {{
 var txOwn = client.transactions().create(new java.util.HashMap<>() {{
   put("senderAddressID", sender.get("id"));
   put("recipientAddress", new java.util.HashMap<>() {{
-    put("name","OwnAg Recipient"); put("address1","Dest 2"); put("countryCode","TR"); put("cityName","Istanbul"); put("cityCode","34"); put("districtName","Esenyurt");
+    put("name","OwnAg Recipient"); put("address1","Atatürk Mahallesi"); put("countryCode","TR"); put("cityName","Istanbul"); put("cityCode","34"); put("districtName","Esenyurt");
   }});
   put("length","10.0"); put("width","10.0"); put("height","10.0"); put("distanceUnit","cm"); put("weight","1.0"); put("massUnit","kg");
   put("providerServiceCode","SURAT_STANDART");

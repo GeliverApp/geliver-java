@@ -33,7 +33,7 @@ public class Pod {
           {
             put("name", "POD Recipient");
             put("phone", "+905000000001");
-            put("address1", "Dest 2");
+            put("address1", "Atatürk Mahallesi");
             put("countryCode", "TR");
             put("cityName", "Istanbul");
             put("cityCode", "34");

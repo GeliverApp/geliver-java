@@ -34,7 +34,7 @@ public class FullFlow {
                     {
                         put("name", "John Doe");
                         put("email", "john@example.com");
-                        put("address1", "Dest St 2");
+                        put("address1", "Atatürk Mahallesi");
                         put("countryCode", "TR");
                         put("cityName", "Istanbul");
                         put("cityCode", "34");

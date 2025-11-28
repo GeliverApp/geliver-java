@@ -33,7 +33,7 @@ public class OneStep {
           {
             put("name", "OneStep Recipient");
             put("phone", "+905000000000");
-            put("address1", "Dest 2");
+            put("address1", "Atatürk Mahallesi");
             put("countryCode", "TR");
             put("cityName", "Istanbul");
             put("cityCode", "34");

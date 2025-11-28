@@ -33,7 +33,7 @@ public class OwnAgreement {
           {
             put("name", "OwnAg Recipient");
             put("phone", "+905000000002");
-            put("address1", "Dest 2");
+            put("address1", "Atatürk Mahallesi");
             put("countryCode", "TR");
             put("cityName", "Istanbul");
             put("cityCode", "34");
