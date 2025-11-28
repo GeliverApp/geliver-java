@@ -187,6 +187,19 @@ System.out.println("Cloned shipment: " + cloned.getId());
   - Listele: `client.webhooks().list()`
   - Sil: `client.webhooks().delete(webhookId)`
   - Test: `client.webhooks().test("price.updated", "https://example.com/webhook")`
+  - Minimal örnek:
+
+    ```java
+    import com.fasterxml.jackson.databind.ObjectMapper;
+    import io.geliver.sdk.models.WebhookUpdateTrackingRequest;
+
+    var mapper = new ObjectMapper();
+    var evt = mapper.readValue(body, WebhookUpdateTrackingRequest.class);
+    if ("TRACK_UPDATED".equals(evt.getEvent())) {
+      var shipment = evt.getShipment();
+      System.out.println("Tracking update: " + shipment.getTrackingUrl() + " " + shipment.getTrackingNumber());
+    }
+    ```
 
 - Kendi Kargo Anlaşmanız (Provider Accounts)
 
