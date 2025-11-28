@@ -136,6 +136,49 @@ var txOwn = client.transactions().create(new java.util.HashMap<>() {{
 }});
 ```
 
+### Gönderi Listeleme, Getir, Güncelle, İptal, Klonla
+
+- Listeleme (docs): https://docs.geliver.io/docs/shipments_and_transaction/list_shipments
+- Gönderi getir (docs): https://docs.geliver.io/docs/shipments_and_transaction/list_shipments
+- Paket güncelle (docs): https://docs.geliver.io/docs/shipments_and_transaction/update_package_shipment
+- Gönderi iptal (docs): https://docs.geliver.io/docs/shipments_and_transaction/cancel_shipment
+- Gönderi klonla (docs): https://docs.geliver.io/docs/shipments_and_transaction/clone_shipment
+
+```java
+// Listeleme (sayfalandırma). list(...) dönen zarfta pagination + data alanları yer alır.
+var params = new java.util.HashMap<String, Object>();
+params.put("page", 1);
+params.put("limit", 20);
+var envelope = client.shipments().list(params);
+@SuppressWarnings("unchecked")
+var shipments = (java.util.List<Shipment>) envelope.get("data");
+for (var s : shipments) {
+  System.out.println(s.getId() + " " + s.getStatusCode());
+}
+
+// Getir
+var fetched = client.shipments().get("SHIPMENT_ID");
+var status = fetched.getTrackingStatus();
+System.out.println("Tracking: " + (status != null ? status.getTrackingStatusCode() : null));
+
+// Paket güncelle (eni, boyu, yüksekliği ve ağırlığı string gönderin)
+var updated = client.shipments().updatePackage(fetched.getId(), new java.util.HashMap<>() {{
+  put("length", "12.0");
+  put("width", "12.0");
+  put("height", "10.0");
+  put("distanceUnit", "cm");
+  put("weight", "1.2");
+  put("massUnit", "kg");
+}});
+
+// İptal
+client.shipments().cancel(fetched.getId());
+
+// Klonla
+var cloned = client.shipments().clone(fetched.getId());
+System.out.println("Cloned shipment: " + cloned.getId());
+```
+
 ## Diğer Kaynaklar (Java)
 
 - Webhooklar
