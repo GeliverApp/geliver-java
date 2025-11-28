@@ -26,7 +26,7 @@ public class QuickStart {
 
     // Gönderici adresi oluşturma (tek seferlik). ID'yi saklayıp tekrar kullanın.
     var sender = client.addresses().createSender(new java.util.HashMap<>() {{
-      put("name", "ACME Inc."); put("email", "ops@acme.test"); put("address1", "Hasan Mahallesi");
+      put("name", "ACME Inc."); put("email", "ops@acme.test"); put("phone", "+905051234567"); put("address1", "Hasan Mahallesi");
       put("countryCode", "TR"); put("cityName", "Istanbul"); put("cityCode", "34");
       put("districtName", "Esenyurt"); put("zip", "34020");
     }});
@@ -35,7 +35,7 @@ public class QuickStart {
     var shipment = client.shipments().createTest(new java.util.HashMap<>() {{
       put("sourceCode", "API"); put("senderAddressID", sender.get("id"));
       put("recipientAddress", new java.util.HashMap<>() {{
-        put("name", "John Doe"); put("email", "john@example.com");
+        put("name", "John Doe"); put("email", "john@example.com"); put("phone", "+905051234568");
         put("address1", "Atatürk Mahallesi"); put("countryCode", "TR");
         put("cityName", "Istanbul"); put("cityCode", "34");
         put("districtName", "Esenyurt"); put("zip", "34020");
