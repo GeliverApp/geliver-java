@@ -98,11 +98,18 @@ public class QuickStart {
 - Tek aşamada gönderi (Create Transaction):
 
 ```java
-var tx = client.transactions().create(new java.util.HashMap<>() {{
+var recipient = new RecipientAddressRequest();
+recipient.name = "OneStep Recipient";
+recipient.phone = "+905000000000";
+recipient.address1 = "Atatürk Mahallesi";
+recipient.countryCode = "TR";
+recipient.cityName = "Istanbul";
+recipient.cityCode = "34";
+recipient.districtName = "Esenyurt";
+
+var tx = client.transactions().createFromShipment(new java.util.HashMap<String, Object>() {{
   put("senderAddressID", sender.get("id"));
-  put("recipientAddress", new java.util.HashMap<>() {{
-    put("name","OneStep Recipient"); put("address1","Atatürk Mahallesi"); put("countryCode","TR"); put("cityName","Istanbul"); put("cityCode","34"); put("districtName","Esenyurt");
-  }});
+  put("recipientAddress", recipient);
   put("length","10.0"); put("width","10.0"); put("height","10.0"); put("distanceUnit","cm"); put("weight","1.0"); put("massUnit","kg");
 }});
 ```
@@ -110,11 +117,18 @@ var tx = client.transactions().create(new java.util.HashMap<>() {{
 - Kapıda ödeme:
 
 ```java
-var txPod = client.transactions().create(new java.util.HashMap<>() {{
+var recipient = new RecipientAddressRequest();
+recipient.name = "POD Recipient";
+recipient.phone = "+905000000001";
+recipient.address1 = "Atatürk Mahallesi";
+recipient.countryCode = "TR";
+recipient.cityName = "Istanbul";
+recipient.cityCode = "34";
+recipient.districtName = "Esenyurt";
+
+var txPod = client.transactions().createFromShipment(new java.util.HashMap<String, Object>() {{
   put("senderAddressID", sender.get("id"));
-  put("recipientAddress", new java.util.HashMap<>() {{
-    put("name","POD Recipient"); put("address1","Atatürk Mahallesi"); put("countryCode","TR"); put("cityName","Istanbul"); put("cityCode","34"); put("districtName","Esenyurt");
-  }});
+  put("recipientAddress", recipient);
   put("length","10.0"); put("width","10.0"); put("height","10.0"); put("distanceUnit","cm"); put("weight","1.0"); put("massUnit","kg");
   put("providerServiceCode","PTT_KAPIDA_ODEME");
   put("productPaymentOnDelivery", true);
@@ -125,11 +139,18 @@ var txPod = client.transactions().create(new java.util.HashMap<>() {{
 - Kendi anlaşmanızla etiket satın alma:
 
 ```java
-var txOwn = client.transactions().create(new java.util.HashMap<>() {{
+var recipient = new RecipientAddressRequest();
+recipient.name = "OwnAg Recipient";
+recipient.phone = "+905000000002";
+recipient.address1 = "Atatürk Mahallesi";
+recipient.countryCode = "TR";
+recipient.cityName = "Istanbul";
+recipient.cityCode = "34";
+recipient.districtName = "Esenyurt";
+
+var txOwn = client.transactions().createFromShipment(new java.util.HashMap<String, Object>() {{
   put("senderAddressID", sender.get("id"));
-  put("recipientAddress", new java.util.HashMap<>() {{
-    put("name","OwnAg Recipient"); put("address1","Atatürk Mahallesi"); put("countryCode","TR"); put("cityName","Istanbul"); put("cityCode","34"); put("districtName","Esenyurt");
-  }});
+  put("recipientAddress", recipient);
   put("length","10.0"); put("width","10.0"); put("height","10.0"); put("distanceUnit","cm"); put("weight","1.0"); put("massUnit","kg");
   put("providerServiceCode","SURAT_STANDART");
   put("providerAccountID","c0dfdb42-012d-438c-9d49-98d13b4d4a2b");

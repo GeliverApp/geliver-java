@@ -1,6 +1,7 @@
 package io.geliver.examples;
 
 import io.geliver.sdk.GeliverClient;
+import io.geliver.sdk.RecipientAddressRequest;
 import java.util.HashMap;
 
 public class OneStep {
@@ -26,20 +27,19 @@ public class OneStep {
       }
     });
 
-    var tx = client.transactions().create(new HashMap<>() {
+    var recipient = new RecipientAddressRequest();
+    recipient.name = "OneStep Recipient";
+    recipient.phone = "+905000000000";
+    recipient.address1 = "Atatürk Mahallesi";
+    recipient.countryCode = "TR";
+    recipient.cityName = "Istanbul";
+    recipient.cityCode = "34";
+    recipient.districtName = "Esenyurt";
+
+    var tx = client.transactions().createFromShipment(new HashMap<String, Object>() {
       {
         put("senderAddressID", sender.get("id"));
-        put("recipientAddress", new HashMap<>() {
-          {
-            put("name", "OneStep Recipient");
-            put("phone", "+905000000000");
-            put("address1", "Atatürk Mahallesi");
-            put("countryCode", "TR");
-            put("cityName", "Istanbul");
-            put("cityCode", "34");
-            put("districtName", "Esenyurt");
-          }
-        });
+        put("recipientAddress", recipient);
         put("length", "10.0");
         put("width", "10.0");
         put("height", "10.0");
