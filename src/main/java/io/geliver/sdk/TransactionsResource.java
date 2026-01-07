@@ -15,8 +15,25 @@ public class TransactionsResource {
 
     /** One-step label purchase: post shipment details directly to /transactions. */
     public Transaction create(Map<String, Object> body) {
+        Map<String, Object> shipmentBody = body;
+        Object wrapperProviderServiceCode = null;
+        Object wrapperProviderAccountID = null;
+        if (body != null && body.get("shipment") instanceof Map<?,?> m) {
+            @SuppressWarnings("unchecked") Map<String, Object> sm = (Map<String, Object>) m;
+            shipmentBody = sm;
+            wrapperProviderServiceCode = body.get("providerServiceCode");
+            wrapperProviderAccountID = body.get("providerAccountID");
+        }
+
+        Map<String, Object> shipment = normalizeShipment(shipmentBody);
         Map<String, Object> wrapper = new HashMap<>();
-        wrapper.put("shipment", normalizeShipment(body));
+        wrapper.put("shipment", shipment);
+        if (wrapperProviderServiceCode != null) shipment.remove("providerServiceCode");
+        Object providerServiceCode = wrapperProviderServiceCode != null ? wrapperProviderServiceCode : shipment.remove("providerServiceCode");
+        if (providerServiceCode != null) wrapper.put("providerServiceCode", providerServiceCode);
+        if (wrapperProviderAccountID != null) shipment.remove("providerAccountID");
+        Object providerAccountID = wrapperProviderAccountID != null ? wrapperProviderAccountID : shipment.remove("providerAccountID");
+        if (providerAccountID != null) wrapper.put("providerAccountID", providerAccountID);
         return c.request("POST", "/transactions", null, wrapper, Transaction.class);
     }
 
