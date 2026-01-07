@@ -72,7 +72,7 @@ public class GeliverClient {
     public GeoResource geo() { return geo; }
     public OrganizationsResource organizations() { return organizations; }
 
-    <T> T request(String method, String path, Map<String, Object> query, Object body, Class<T> outClass) {
+    <T> T request(String method, String path, Map<String, ?> query, Object body, Class<T> outClass) {
         try {
             String url = baseUrl + path;
             if (query != null && !query.isEmpty()) {
@@ -138,7 +138,7 @@ public class GeliverClient {
         }
     }
 
-    <T> T request(String method, String path, Map<String, Object> query, Object body, TypeReference<T> typeRef) {
+    <T> T request(String method, String path, Map<String, ?> query, Object body, TypeReference<T> typeRef) {
         try {
             String url = baseUrl + path;
             if (query != null && !query.isEmpty()) {

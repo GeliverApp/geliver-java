@@ -14,9 +14,11 @@ public class ProvidersResource {
         return c.request("POST", "/provideraccounts", null, body, Map.class);
     }
     public Map<String,Object> deleteAccount(String providerAccountId, Boolean isDeleteAccountConnection) {
-        var q = isDeleteAccountConnection == null ? null : Map.of("isDeleteAccountConnection", isDeleteAccountConnection);
+        Map<String, Object> q =
+                isDeleteAccountConnection == null
+                        ? null
+                        : Map.<String, Object>of("isDeleteAccountConnection", isDeleteAccountConnection);
         return c.request("DELETE", "/provideraccounts/"+encode(providerAccountId), q, null, Map.class);
     }
     private static String encode(String s) { return java.net.URLEncoder.encode(s, java.nio.charset.StandardCharsets.UTF_8); }
 }
-
