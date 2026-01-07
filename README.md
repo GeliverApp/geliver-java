@@ -109,6 +109,7 @@ recipient.districtName = "Esenyurt";
 
 var tx = client.transactions().createFromShipment(new java.util.HashMap<String, Object>() {{
   put("senderAddressID", sender.get("id"));
+  put("test", true);
   put("recipientAddress", recipient);
   put("length","10.0"); put("width","10.0"); put("height","10.0"); put("distanceUnit","cm"); put("weight","1.0"); put("massUnit","kg");
 }});

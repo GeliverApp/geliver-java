@@ -15,12 +15,14 @@ public class TransactionsResource {
 
     /** One-step label purchase: post shipment details directly to /transactions. */
     public Transaction create(Map<String, Object> body) {
-        return c.request("POST", "/transactions", null, normalizeShipment(body), Transaction.class);
+        Map<String, Object> wrapper = new HashMap<>();
+        wrapper.put("shipment", normalizeShipment(body));
+        return c.request("POST", "/transactions", null, wrapper, Transaction.class);
     }
 
     /** One-step label purchase accepting any shipment-like object (maps or POJOs). */
     public Transaction create(Object body) {
-        return c.request("POST", "/transactions", null, normalizeShipment(toMap(body)), Transaction.class);
+        return create(toMap(body));
     }
 
     /** Explicit helper that takes a shipment-like payload and posts it to /transactions. */

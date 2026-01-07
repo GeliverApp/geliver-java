@@ -39,6 +39,7 @@ public class OneStep {
     var tx = client.transactions().createFromShipment(new HashMap<String, Object>() {
       {
         put("senderAddressID", sender.get("id"));
+        put("test", true);
         put("recipientAddress", recipient);
         put("length", "10.0");
         put("width", "10.0");
