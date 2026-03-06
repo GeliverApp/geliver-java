@@ -22,7 +22,7 @@ public class ShipmentsResource {
         if (ov instanceof Map<?,?> omap) {
             @SuppressWarnings("unchecked") Map<String,Object> m = new HashMap<>((Map<String,Object>)omap);
             if (!m.containsKey("sourceCode") || m.get("sourceCode") == null || String.valueOf(m.get("sourceCode")).isEmpty()) {
-                m.put("sourceCode", "API");
+                m.put("sourceCode", "SDK");
             }
             copy.put("order", m);
         }
@@ -35,7 +35,7 @@ public class ShipmentsResource {
         if (ov2 instanceof Map<?,?> omap2) {
             @SuppressWarnings("unchecked") Map<String,Object> m2 = new HashMap<>((Map<String,Object>)omap2);
             if (!m2.containsKey("sourceCode") || m2.get("sourceCode") == null || String.valueOf(m2.get("sourceCode")).isEmpty()) {
-                m2.put("sourceCode", "API");
+                m2.put("sourceCode", "SDK");
             }
             copy.put("order", m2);
         }
@@ -59,6 +59,23 @@ public class ShipmentsResource {
 
     public Shipment cancel(String shipmentId) { return c.request("DELETE", "/shipments/" + encode(shipmentId), null, null, Shipment.class); }
     public Shipment clone(String shipmentId) { return c.request("POST", "/shipments/" + encode(shipmentId), null, null, Shipment.class); }
+
+    /** Create return shipment for an existing one (POST with isReturn=true). */
+    public Shipment createReturn(String shipmentId, Map<String, Object> body) {
+        Map<String,Object> copy = new HashMap<>(body == null ? Map.of() : body);
+        copy.put("isReturn", true);
+        Object count = copy.get("count");
+        boolean needsDefault = (count == null);
+        if (!needsDefault) {
+            if (count instanceof Number n) {
+                needsDefault = n.intValue() <= 0;
+            } else if (count instanceof String s) {
+                try { needsDefault = Integer.parseInt(s) <= 0; } catch (NumberFormatException ignored) { /* keep */ }
+            }
+        }
+        if (needsDefault) copy.put("count", 1);
+        return c.request("POST", "/shipments/" + encode(shipmentId), null, copy, Shipment.class);
+    }
 
     public byte[] downloadLabelByUrl(String url) { return c.downloadBytes(url); }
     public String downloadResponsiveLabelByUrl(String url) { return c.downloadString(url); }

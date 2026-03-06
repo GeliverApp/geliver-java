@@ -21,9 +21,12 @@ import java.util.Map;
 
 public class GeliverClient {
     public static final String DEFAULT_BASE_URL = "https://api.geliver.io/api/v1";
+    public static final String VERSION = "0.3.2";
+    public static final String DEFAULT_USER_AGENT = "geliver-java/" + VERSION;
 
     private final String baseUrl;
     private final String token;
+    private final String userAgent;
     private final HttpClient http;
     private final int maxRetries;
     final ObjectMapper mapper;
@@ -45,6 +48,7 @@ public class GeliverClient {
     public GeliverClient(String token, String baseUrl, HttpClient http, int maxRetries) {
         this.baseUrl = (baseUrl == null ? DEFAULT_BASE_URL : baseUrl).replaceAll("/+$", "");
         this.token = token;
+        this.userAgent = DEFAULT_USER_AGENT;
         this.http = http != null ? http : HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
         this.maxRetries = maxRetries;
         this.mapper = new ObjectMapper()
@@ -62,15 +66,41 @@ public class GeliverClient {
         this.organizations = new OrganizationsResource(this);
     }
 
-    public ShipmentsResource shipments() { return shipments; }
-    public TransactionsResource transactions() { return transactions; }
-    public AddressesResource addresses() { return addresses; }
-    public WebhooksResource webhooks() { return webhooks; }
-    public ProvidersResource providers() { return providers; }
-    public ParcelTemplatesResource parcelTemplates() { return parcelTemplates; }
-    public PricesResource prices() { return prices; }
-    public GeoResource geo() { return geo; }
-    public OrganizationsResource organizations() { return organizations; }
+    public ShipmentsResource shipments() {
+        return shipments;
+    }
+
+    public TransactionsResource transactions() {
+        return transactions;
+    }
+
+    public AddressesResource addresses() {
+        return addresses;
+    }
+
+    public WebhooksResource webhooks() {
+        return webhooks;
+    }
+
+    public ProvidersResource providers() {
+        return providers;
+    }
+
+    public ParcelTemplatesResource parcelTemplates() {
+        return parcelTemplates;
+    }
+
+    public PricesResource prices() {
+        return prices;
+    }
+
+    public GeoResource geo() {
+        return geo;
+    }
+
+    public OrganizationsResource organizations() {
+        return organizations;
+    }
 
     <T> T request(String method, String path, Map<String, ?> query, Object body, Class<T> outClass) {
         try {
@@ -78,13 +108,16 @@ public class GeliverClient {
             if (query != null && !query.isEmpty()) {
                 StringBuilder sb = new StringBuilder();
                 for (var e : query.entrySet()) {
-                    if (e.getValue() == null) continue;
-                    if (sb.length() > 0) sb.append('&');
+                    if (e.getValue() == null)
+                        continue;
+                    if (sb.length() > 0)
+                        sb.append('&');
                     sb.append(URLEncoder.encode(e.getKey(), StandardCharsets.UTF_8))
-                      .append('=')
-                      .append(URLEncoder.encode(String.valueOf(e.getValue()), StandardCharsets.UTF_8));
+                            .append('=')
+                            .append(URLEncoder.encode(String.valueOf(e.getValue()), StandardCharsets.UTF_8));
                 }
-                if (sb.length() > 0) url += "?" + sb;
+                if (sb.length() > 0)
+                    url += "?" + sb;
             }
             String bodyStr = null;
             if (body != null) {
@@ -94,7 +127,8 @@ public class GeliverClient {
                     .uri(URI.create(url))
                     .timeout(Duration.ofSeconds(30))
                     .header("Authorization", "Bearer " + token)
-                    .header("Content-Type", "application/json");
+                    .header("Content-Type", "application/json")
+                    .header("User-Agent", userAgent);
             switch (method) {
                 case "GET" -> rb.GET();
                 case "DELETE" -> rb.DELETE();
@@ -106,7 +140,11 @@ public class GeliverClient {
                 HttpResponse<String> res = http.send(rb.build(), HttpResponse.BodyHandlers.ofString());
                 String text = res.body() == null ? "{}" : res.body();
                 JsonNode root;
-                try { root = mapper.readTree(text); } catch (Exception e) { root = null; }
+                try {
+                    root = mapper.readTree(text);
+                } catch (Exception e) {
+                    root = null;
+                }
                 if (res.statusCode() >= 400) {
                     if (shouldRetry(res.statusCode()) && attempt < maxRetries) {
                         attempt++;
@@ -114,11 +152,16 @@ public class GeliverClient {
                         continue;
                     }
                     String code = root != null && root.has("code") ? root.get("code").asText(null) : null;
-                    String msg = root != null && root.has("message") ? root.get("message").asText("HTTP " + res.statusCode()) : ("HTTP " + res.statusCode());
-                    String addl = root != null && root.has("additionalMessage") ? root.get("additionalMessage").asText(null) : null;
+                    String msg = root != null && root.has("message")
+                            ? root.get("message").asText("HTTP " + res.statusCode())
+                            : ("HTTP " + res.statusCode());
+                    String addl = root != null && root.has("additionalMessage")
+                            ? root.get("additionalMessage").asText(null)
+                            : null;
                     throw new GeliverApiException(msg, res.statusCode(), code, addl, root);
                 }
-                if (outClass == null) return null;
+                if (outClass == null)
+                    return null;
                 // unwrap envelope if present and result
                 if (root != null && (root.has("result") || root.has("data"))) {
                     if (root.has("result") && root.get("result").isBoolean() && !root.get("result").asBoolean()) {
@@ -144,21 +187,26 @@ public class GeliverClient {
             if (query != null && !query.isEmpty()) {
                 StringBuilder sb = new StringBuilder();
                 for (var e : query.entrySet()) {
-                    if (e.getValue() == null) continue;
-                    if (sb.length() > 0) sb.append('&');
+                    if (e.getValue() == null)
+                        continue;
+                    if (sb.length() > 0)
+                        sb.append('&');
                     sb.append(URLEncoder.encode(e.getKey(), StandardCharsets.UTF_8))
-                      .append('=')
-                      .append(URLEncoder.encode(String.valueOf(e.getValue()), StandardCharsets.UTF_8));
+                            .append('=')
+                            .append(URLEncoder.encode(String.valueOf(e.getValue()), StandardCharsets.UTF_8));
                 }
-                if (sb.length() > 0) url += "?" + sb;
+                if (sb.length() > 0)
+                    url += "?" + sb;
             }
             String bodyStr = null;
-            if (body != null) bodyStr = mapper.writeValueAsString(body);
+            if (body != null)
+                bodyStr = mapper.writeValueAsString(body);
             HttpRequest.Builder rb = HttpRequest.newBuilder()
                     .uri(URI.create(url))
                     .timeout(Duration.ofSeconds(30))
                     .header("Authorization", "Bearer " + token)
-                    .header("Content-Type", "application/json");
+                    .header("Content-Type", "application/json")
+                    .header("User-Agent", userAgent);
             switch (method) {
                 case "GET" -> rb.GET();
                 case "DELETE" -> rb.DELETE();
@@ -169,7 +217,11 @@ public class GeliverClient {
                 HttpResponse<String> res = http.send(rb.build(), HttpResponse.BodyHandlers.ofString());
                 String text = res.body() == null ? "{}" : res.body();
                 JsonNode root;
-                try { root = mapper.readTree(text); } catch (Exception e) { root = null; }
+                try {
+                    root = mapper.readTree(text);
+                } catch (Exception e) {
+                    root = null;
+                }
                 if (res.statusCode() >= 400) {
                     if (shouldRetry(res.statusCode()) && attempt < maxRetries) {
                         attempt++;
@@ -177,8 +229,12 @@ public class GeliverClient {
                         continue;
                     }
                     String code = root != null && root.has("code") ? root.get("code").asText(null) : null;
-                    String msg = root != null && root.has("message") ? root.get("message").asText("HTTP " + res.statusCode()) : ("HTTP " + res.statusCode());
-                    String addl = root != null && root.has("additionalMessage") ? root.get("additionalMessage").asText(null) : null;
+                    String msg = root != null && root.has("message")
+                            ? root.get("message").asText("HTTP " + res.statusCode())
+                            : ("HTTP " + res.statusCode());
+                    String addl = root != null && root.has("additionalMessage")
+                            ? root.get("additionalMessage").asText(null)
+                            : null;
                     throw new GeliverApiException(msg, res.statusCode(), code, addl, root);
                 }
                 if (root != null && (root.has("result") || root.has("data"))) {
@@ -202,9 +258,14 @@ public class GeliverClient {
 
     byte[] downloadBytes(String url) {
         try {
-            HttpRequest req = HttpRequest.newBuilder().uri(URI.create(url)).GET().build();
+            HttpRequest req = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .header("User-Agent", userAgent)
+                    .GET()
+                    .build();
             HttpResponse<byte[]> res = http.send(req, HttpResponse.BodyHandlers.ofByteArray());
-            if (res.statusCode() >= 400) throw new RuntimeException("download error: " + res.statusCode());
+            if (res.statusCode() >= 400)
+                throw new RuntimeException("download error: " + res.statusCode());
             return res.body();
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
@@ -213,18 +274,29 @@ public class GeliverClient {
 
     String downloadString(String url) {
         try {
-            HttpRequest req = HttpRequest.newBuilder().uri(URI.create(url)).GET().build();
+            HttpRequest req = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .header("User-Agent", userAgent)
+                    .GET()
+                    .build();
             HttpResponse<String> res = http.send(req, HttpResponse.BodyHandlers.ofString());
-            if (res.statusCode() >= 400) throw new RuntimeException("download error: " + res.statusCode());
+            if (res.statusCode() >= 400)
+                throw new RuntimeException("download error: " + res.statusCode());
             return res.body();
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
 
-    static boolean shouldRetry(int status) { return status == 429 || status >= 500; }
+    static boolean shouldRetry(int status) {
+        return status == 429 || status >= 500;
+    }
+
     static void backoff(int attempt) {
-        try { Thread.sleep(Math.min(2000, 200 * (1 << (attempt - 1)))); } catch (InterruptedException ignored) {}
+        try {
+            Thread.sleep(Math.min(2000, 200 * (1 << (attempt - 1))));
+        } catch (InterruptedException ignored) {
+        }
     }
 }
 
@@ -233,6 +305,7 @@ class GeliverApiException extends RuntimeException {
     public final String code;
     public final String additionalMessage;
     public final JsonNode body;
+
     public GeliverApiException(String message, Integer status, String code, String additionalMessage, JsonNode body) {
         super(message);
         this.status = status;

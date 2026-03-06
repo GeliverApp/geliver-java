@@ -60,7 +60,7 @@ public class TransactionsResource {
         if (ov instanceof Map<?,?> omap) {
             @SuppressWarnings("unchecked") Map<String,Object> m = new HashMap<>((Map<String,Object>)omap);
             if (!m.containsKey("sourceCode") || m.get("sourceCode") == null || String.valueOf(m.get("sourceCode")).isBlank()) {
-                m.put("sourceCode", "API");
+                m.put("sourceCode", "SDK");
             }
             copy.put("order", m);
         }

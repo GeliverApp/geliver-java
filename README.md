@@ -33,7 +33,7 @@ public class QuickStart {
 
     // Inline alıcı bilgileriyle test gönderisi oluşturma. Canlı ortam için createTest yerine create fonksiyonunu kullanın.
     var shipment = client.shipments().createTest(new java.util.HashMap<>() {{
-      put("sourceCode", "API"); put("senderAddressID", sender.get("id"));
+      put("sourceCode", "SDK"); put("senderAddressID", sender.get("id"));
       put("recipientAddress", new java.util.HashMap<>() {{
         put("name", "John Doe"); put("email", "john@example.com"); put("phone", "+905051234568");
         put("address1", "Atatürk Mahallesi"); put("countryCode", "TR");
@@ -199,7 +199,22 @@ client.shipments().cancel(fetched.getId());
 // Klonla
 var cloned = client.shipments().clone(fetched.getId());
 System.out.println("Cloned shipment: " + cloned.getId());
+
+// İade gönderisi oluşturma (POST /shipments/{id} + isReturn=true)
+var returned = client.shipments().createReturn(fetched.getId(), new java.util.HashMap<>() {{
+  put("willAccept", true);
+  put("providerServiceCode", "SURAT_STANDART"); // opsiyonel
+  // put("count", 1); // opsiyonel, varsayılan 1
+  // put("senderAddress", Map.of(...)); // opsiyonel
+}});
 ```
+
+Not:
+
+- `willAccept` alanı opsiyoneldir (varsayılan `false`). `true` ise backend iade için uygun teklifi otomatik kabul eder (etiket satın alma). `false` ise sadece iade shipment’i oluşturur; daha sonra `client.transactions().acceptOffer(offerId)` ile kabul edebilirsiniz.
+- `providerServiceCode` alanı opsiyoneldir. Varsayılan olarak orijinal gönderinin sağlayıcısı kullanılır; dilerseniz bu alanı vererek değiştirebilirsiniz.
+- `senderAddress` alanı opsiyoneldir. Varsayılan olarak orijinal gönderinin alıcı adresi kullanılır; dilerseniz bu alanı vererek değiştirebilirsiniz.
+- `count` alanı opsiyoneldir (varsayılan `1`). Bu fonksiyon “tek shipment için tek iade” akışı içindir; genelde `1` kullanılmalıdır.
 
 ## Diğer Kaynaklar (Java)
 
