@@ -18,13 +18,11 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
       - name: Import GPG key
-        if: ${{ secrets.GPG_PRIVATE_KEY && secrets.GPG_PASSPHRASE }}
         uses: crazy-max/ghaction-import-gpg@v6
         with:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.GPG_PASSPHRASE }}
       - name: Configure Maven settings
-        if: ${{ secrets.OSSRH_USERNAME && secrets.OSSRH_PASSWORD }}
         run: |
           mkdir -p ~/.m2
           cat > ~/.m2/settings.xml <<EOF
@@ -46,6 +44,4 @@ jobs:
       - name: Build (skip tests)
         run: mvn -q -DskipTests package
       - name: Deploy to Maven Central (staging)
-        if: ${{ secrets.OSSRH_USERNAME && secrets.OSSRH_PASSWORD && secrets.GPG_PRIVATE_KEY && secrets.GPG_PASSPHRASE }}
         run: mvn -P release -DskipTests deploy
-
