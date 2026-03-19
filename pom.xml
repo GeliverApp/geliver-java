@@ -123,14 +123,10 @@
             <version>3.2.4</version>
             <configuration>
               <bestPractices>true</bestPractices>
+              <signer>bc</signer>
               <useAgent>false</useAgent>
+              <keyEnvName>MAVEN_GPG_KEY</keyEnvName>
               <passphraseEnvName>MAVEN_GPG_PASSPHRASE</passphraseEnvName>
-              <keyname>${env.MAVEN_GPG_KEYNAME}</keyname>
-              <gpgArguments>
-                <arg>--batch</arg>
-                <arg>--pinentry-mode</arg>
-                <arg>loopback</arg>
-              </gpgArguments>
             </configuration>
             <executions>
               <execution>
