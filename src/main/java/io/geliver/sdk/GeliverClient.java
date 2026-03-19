@@ -21,7 +21,7 @@ import java.util.Map;
 
 public class GeliverClient {
     public static final String DEFAULT_BASE_URL = "https://api.geliver.io/api/v1";
-    public static final String VERSION = "0.3.3";
+    public static final String VERSION = "0.3.4";
     public static final String DEFAULT_USER_AGENT = "geliver-java/" + VERSION;
 
     private final String baseUrl;
