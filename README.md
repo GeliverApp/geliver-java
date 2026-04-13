@@ -5,6 +5,7 @@
 Resmi Java istemcisi (framework bağımsız). Java 17+ gerektirir. HTTP isteklerinde Java 11 `HttpClient` kullanır ve JSON için Jackson ile çalışır.
 
 - Dokümantasyon: https://docs.geliver.io
+- Değişiklik geçmişi: `CHANGELOG.md`
 - Maven ile kullanın ya da bu repo altındaki `java/` modülünü derleyin.
 
 ## Kurulum (yerel)
@@ -94,7 +95,11 @@ public class QuickStart {
 
 ## Örnekler
 
+İade örnekleri mevcut ve iade edilebilir bir shipment ID bekler. ID'yi `GELIVER_RETURN_SHIPMENT_ID` ile veya ilk komut satırı argümanı olarak verebilirsiniz.
+
 - Full flow: `src/main/java/io/geliver/examples/FullFlow.java`
+- İade oluştur, etiketi sonra satın al: `src/main/java/io/geliver/examples/ReturnShipment.java`
+- İade oluştur, etiketi hemen satın al: `src/main/java/io/geliver/examples/ReturnTransaction.java`
 - Tek aşamada gönderi (Create Transaction):
 
 ```java
@@ -202,19 +207,32 @@ System.out.println("Cloned shipment: " + cloned.getId());
 
 // İade gönderisi oluşturma (POST /shipments/{id} + isReturn=true)
 var returned = client.shipments().createReturn(fetched.getId(), new java.util.HashMap<>() {{
-  put("willAccept", true);
   put("providerServiceCode", "SURAT_STANDART"); // opsiyonel
   // put("count", 1); // opsiyonel, varsayılan 1
   // put("senderAddress", Map.of(...)); // opsiyonel
 }});
+System.out.println(returned.getId());
 ```
 
 Not:
 
-- `willAccept` alanı opsiyoneldir (varsayılan `false`). `true` ise backend iade için uygun teklifi otomatik kabul eder (etiket satın alma). `false` ise sadece iade shipment’i oluşturur; daha sonra `client.transactions().acceptOffer(offerId)` ile kabul edebilirsiniz.
+- `shipments().createReturn(...)` iadeyi oluşturur, etiketi satın almaz ve `Shipment` döner.
+- Etiketi daha sonra satın almak isterseniz, teklif hazır olduğunda normal satın alma akışını `transactions().acceptOffer(...)` ile kullanabilirsiniz.
 - `providerServiceCode` alanı opsiyoneldir. Varsayılan olarak orijinal gönderinin sağlayıcısı kullanılır; dilerseniz bu alanı vererek değiştirebilirsiniz.
 - `senderAddress` alanı opsiyoneldir. Varsayılan olarak orijinal gönderinin alıcı adresi kullanılır; dilerseniz bu alanı vererek değiştirebilirsiniz.
 - `count` alanı opsiyoneldir (varsayılan `1`). Bu fonksiyon “tek shipment için tek iade” akışı içindir; genelde `1` kullanılmalıdır.
+
+İadeyi oluşturup etiketi hemen satın almak için:
+
+```java
+var tx = client.transactions().createReturn(fetched.getId(), new java.util.HashMap<>() {{
+  put("providerServiceCode", "SURAT_STANDART");
+}});
+System.out.println(tx.getId()); // transaction id
+System.out.println(tx.getShipment() != null ? tx.getShipment().getId() : null); // return shipment id, API döndürüyorsa
+```
+
+- `transactions().createReturn(...)` iadeyi oluşturur, etiketi hemen satın alır ve `Transaction` döner.
 
 ## Diğer Kaynaklar (Java)
 
@@ -270,6 +288,9 @@ export GELIVER_TOKEN=YOUR_TOKEN
 mvn -q -Dtest=FullFlowTest -DfailIfNoTests=false test
 # ya da örnek ana sınıf:
 mvn -q -Dexec.mainClass=io.geliver.examples.FullFlow exec:java
+export GELIVER_RETURN_SHIPMENT_ID=YOUR_RETURNABLE_SHIPMENT_ID
+mvn -q -Dexec.mainClass=io.geliver.examples.ReturnShipment exec:java
+mvn -q -Dexec.mainClass=io.geliver.examples.ReturnTransaction exec:java
 ```
 
 ---

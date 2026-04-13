@@ -13,6 +13,24 @@ public class TransactionsResource {
         return c.request("POST", "/transactions", null, Map.of("offerID", offerId), Transaction.class);
     }
 
+    /** Create a return shipment and purchase the label immediately. Returns the created Transaction. */
+    public Transaction createReturn(String shipmentId, Map<String, Object> body) {
+        Map<String,Object> copy = new HashMap<>(body == null ? Map.of() : body);
+        copy.put("isReturn", true);
+        copy.put("willAccept", true);
+        Object count = copy.get("count");
+        boolean needsDefault = (count == null);
+        if (!needsDefault) {
+            if (count instanceof Number n) {
+                needsDefault = n.intValue() <= 0;
+            } else if (count instanceof String s) {
+                try { needsDefault = Integer.parseInt(s) <= 0; } catch (NumberFormatException ignored) { /* keep */ }
+            }
+        }
+        if (needsDefault) copy.put("count", 1);
+        return c.request("POST", "/shipments/" + java.net.URLEncoder.encode(shipmentId, java.nio.charset.StandardCharsets.UTF_8), null, copy, Transaction.class);
+    }
+
     /** One-step label purchase: post shipment details directly to /transactions. */
     public Transaction create(Map<String, Object> body) {
         Map<String, Object> shipmentBody = body;

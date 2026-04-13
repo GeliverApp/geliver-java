@@ -60,9 +60,13 @@ public class ShipmentsResource {
     public Shipment cancel(String shipmentId) { return c.request("DELETE", "/shipments/" + encode(shipmentId), null, null, Shipment.class); }
     public Shipment clone(String shipmentId) { return c.request("POST", "/shipments/" + encode(shipmentId), null, null, Shipment.class); }
 
-    /** Create return shipment for an existing one (POST with isReturn=true). */
+    /** Create a return shipment without purchasing the label yet. Use transactions().createReturn to purchase it immediately. */
     public Shipment createReturn(String shipmentId, Map<String, Object> body) {
         Map<String,Object> copy = new HashMap<>(body == null ? Map.of() : body);
+        if (Boolean.TRUE.equals(copy.get("willAccept"))) {
+            throw new IllegalArgumentException("shipments().createReturn does not support willAccept=true; use transactions().createReturn instead");
+        }
+        copy.remove("willAccept");
         copy.put("isReturn", true);
         Object count = copy.get("count");
         boolean needsDefault = (count == null);

@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.geliver</groupId>
   <artifactId>geliver-java</artifactId>
-  <version>0.3.7</version>
+  <version>0.4.0</version>
   <packaging>jar</packaging>
   <name>Geliver Java SDK</name>
   <description>Official Java client for Geliver Shipping Marketplace API</description>
