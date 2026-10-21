@@ -87,7 +87,7 @@ public class QuickStart {
 
 ## Notlar ve İpuçları (TR)
 
-- Yeni gönderide gönderici için `senderAddressID` veya satır içi `senderAddress`; alıcı için `recipientAddressID` veya satır içi `recipientAddress` verin. Dört kombinasyon da desteklenir; her taraf için yalnızca bir adres seçin. Bu kural normal ve iade dahil tüm yeni gönderilerde ve tek adım etiket satın alma akışında geçerlidir.
+- Yeni gönderide alıcı için `recipientAddressID` veya satır içi `recipientAddress` alanlarından birini verin. Gönderici için `senderAddressID` veya `senderAddress` kullanabilirsiniz; ikisini de vermezseniz backend kurumun varsayılan gönderici adresini kullanır. Bu kural normal ve iade dahil tüm yeni gönderilerde ve tek adım etiket satın alma akışında geçerlidir.
 - `length`, `width`, `height`, `weight` istek alanları string gönderilmelidir (örn. "10.0").
 - Barkod ve etiketler teklif kabulünden (Transaction) sonra üretilir; kabulün ardından URL'lerden indirebilirsiniz.
 - Takip numarası (trackingNumber) her zaman işlemin hemen ardından oluşmayabilir; prod ortamında webhookları kullanın.
@@ -243,9 +243,9 @@ System.out.println(tx.getShipment() != null ? tx.getShipment().getId() : null); 
 
 ## Referans gönderi olmadan kargo bana gelecek
 
-Yeni gönderiyi `shipments().create(...)` ile `isReturn=true` göndererek oluşturun. `isReturn` adresleri otomatik değiştirmez. Çalıştırılabilir örnekte müşteri adresi satır içi, sizin adresiniz kayıtlıdır. `test=true` yalnızca test içindir.
+Yeni gönderiyi `shipments().create(...)` ile `isReturn=true` göndererek oluşturun. İadede `recipientAddress` müşterinin kargonun alınacağı adresidir; `senderAddress` sizin teslim adresinizdir. Backend taşıyıcı için yönü ters çevirir. Çalıştırılabilir örnek sizin için varsayılan gönderici adresini kullanır. `test=true` yalnızca test içindir.
 
-Çalıştırılabilir örnek: `GELIVER_TOKEN=... GELIVER_MERCHANT_ADDRESS_ID=... mvn -q -Dexec.mainClass=io.geliver.examples.IncomingShipment exec:java`. Etiketi satın almak için teklif kabul akışını kullanın.
+Çalıştırılabilir örnek: `GELIVER_TOKEN=... mvn -q -Dexec.mainClass=io.geliver.examples.IncomingShipment exec:java`. Etiketi satın almak için teklif kabul akışını kullanın.
 
 ## Diğer Kaynaklar (Java)
 

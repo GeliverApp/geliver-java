@@ -16,7 +16,7 @@ public class ShipmentsResource {
             Object id = body.get(side + "AddressID");
             boolean hasId = id instanceof String value && !value.isBlank();
             boolean hasAddress = body.get(side + "Address") != null;
-            if (hasId == hasAddress) {
+            if ((side.equals("recipient") && hasId == hasAddress) || (side.equals("sender") && hasId && hasAddress)) {
                 throw new IllegalArgumentException("Provide exactly one of " + side + "AddressID or " + side + "Address");
             }
         }

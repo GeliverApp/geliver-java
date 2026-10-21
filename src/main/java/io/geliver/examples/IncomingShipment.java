@@ -7,9 +7,8 @@ import java.util.Map;
 public class IncomingShipment {
     public static void main(String[] args) {
         var token = System.getenv("GELIVER_TOKEN");
-        var recipientAddressID = System.getenv("GELIVER_MERCHANT_ADDRESS_ID");
-        if (token == null || token.isBlank() || recipientAddressID == null || recipientAddressID.isBlank()) {
-            System.err.println("Set GELIVER_TOKEN and GELIVER_MERCHANT_ADDRESS_ID.");
+        if (token == null || token.isBlank()) {
+            System.err.println("Set GELIVER_TOKEN.");
             return;
         }
 
@@ -17,12 +16,11 @@ public class IncomingShipment {
         var body = new HashMap<String, Object>();
         body.put("isReturn", true);
         body.put("test", true);
-        body.put("senderAddress", Map.of(
+        body.put("recipientAddress", Map.of(
             "name", "Müşteri Adı", "email", "customer@example.com", "phone", "+905051234567",
             "address1", "Örnek Mahallesi 1", "countryCode", "TR",
             "cityCode", "34", "districtName", "Kadıköy", "zip", "34000"
         ));
-        body.put("recipientAddressID", recipientAddressID);
         body.put("length", "10");
         body.put("width", "10");
         body.put("height", "10");
