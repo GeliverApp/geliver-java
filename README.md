@@ -240,6 +240,12 @@ System.out.println(tx.getShipment() != null ? tx.getShipment().getId() : null); 
 
 - `transactions().createReturn(...)` iadeyi oluşturur, etiketi hemen satın alır ve `Transaction` döner.
 
+## Referans gönderi olmadan kargo bana gelecek
+
+Yeni gönderiyi `shipments().create(...)` ile `isReturn=true` göndererek oluşturun. `senderAddress` müşterinin çıkış adresi, `recipientAddressID` sizin kayıtlı alıcı adresinizdir; `isReturn` adresleri otomatik değiştirmez. `test=true` yalnızca test içindir.
+
+Çalıştırılabilir örnek: `GELIVER_TOKEN=... GELIVER_MERCHANT_ADDRESS_ID=... mvn -q -Dexec.mainClass=io.geliver.examples.IncomingShipment exec:java`. Etiketi satın almak için teklif kabul akışını kullanın.
+
 ## Diğer Kaynaklar (Java)
 
 - Webhooklar
