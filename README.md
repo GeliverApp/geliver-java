@@ -208,7 +208,6 @@ System.out.println("Cloned shipment: " + cloned.getId());
 
 // İade gönderisi oluşturma (POST /shipments/{id} + isReturn=true)
 var returned = client.shipments().createReturn(fetched.getId(), new java.util.HashMap<>() {{
-  put("providerServiceCode", "SURAT_STANDART"); // opsiyonel
   // put("count", 1); // opsiyonel, varsayılan 1
   // put("senderAddress", Map.of(...)); // opsiyonel
 }});
@@ -225,8 +224,8 @@ Not:
 
 - `shipments().createReturn(...)` iadeyi oluşturur, etiketi satın almaz ve `Shipment` döner.
 - Etiketi daha sonra satın almak isterseniz, teklif hazır olduğunda normal satın alma akışını `transactions().acceptOffer(...)` ile kullanabilirsiniz.
-- `providerServiceCode` alanı opsiyoneldir. Varsayılan olarak orijinal gönderinin sağlayıcısı kullanılır; dilerseniz bu alanı vererek değiştirebilirsiniz.
-- `senderAddress` alanı opsiyoneldir. Varsayılan olarak orijinal gönderinin alıcı adresi kullanılır; dilerseniz bu alanı vererek değiştirebilirsiniz.
+- `providerServiceCode` yalnızca etiketi hemen satın alan iade akışında kullanılır; verilmezse orijinal gönderinin taşıyıcısı seçilir. Etiketi satın almadan iade oluştururken bu alan dikkate alınmaz.
+- İade müşteriden orijinal göndericiye gider. `senderAddress` ile müşterinin kargonun alınacağı adresini değiştirebilirsiniz; verilmezse orijinal alıcı adresi kullanılır. Adresleri SDK tarafında ters çevirmeyin. Bu referanslı iade endpoint’i yalnızca inline `senderAddress` kabul eder; yeni gönderi oluşturmadaki `recipientAddress`, `recipientAddressID` ve `senderAddressID` seçenekleri burada geçerli değildir.
 - `count` alanı opsiyoneldir (varsayılan `1`). Bu fonksiyon “tek shipment için tek iade” akışı içindir; genelde `1` kullanılmalıdır.
 
 İadeyi oluşturup etiketi hemen satın almak için:
