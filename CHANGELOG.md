@@ -6,10 +6,15 @@ This file documents notable changes in the SDK.
 
 ## Sürüm / Version
 
-- Türkçe: Bu değişiklikler `0.4.0` sürümü için hazırlandı.
-- English: These changes are prepared for version `0.4.0`.
+- Türkçe: Bu değişiklikler `0.5.0` sürümü için hazırlandı.
+- English: These changes are prepared for version `0.5.0`.
 
 ## Türkçe
+
+### 0.5.0
+
+- `shipments().create(...)` ile `isReturn`, satır içi `senderAddress` ve `recipientAddressID` kullanılarak bağımsız iade gönderisi oluşturulabilir.
+- `IncomingShipment` örneği eklendi.
 
 ### 0.4.0
 
@@ -31,6 +36,11 @@ This file documents notable changes in the SDK.
 - Return shipment örneğindeki ilerleme çıktısı, generated offer model tipiyle uyumlu hale getirildi.
 
 ## English
+
+### 0.5.0
+
+- `shipments().create(...)` supports independent returns with `isReturn`, an inline `senderAddress`, and `recipientAddressID`.
+- Added the `IncomingShipment` example.
 
 ### 0.4.0
 
