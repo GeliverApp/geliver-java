@@ -11,8 +11,20 @@ public class ShipmentsResource {
     private final GeliverClient c;
     ShipmentsResource(GeliverClient c) { this.c = c; }
 
+    static void validateAddresses(Map<String, Object> body) {
+        for (var side : new String[]{"sender", "recipient"}) {
+            Object id = body.get(side + "AddressID");
+            boolean hasId = id instanceof String value && !value.isBlank();
+            boolean hasAddress = body.get(side + "Address") != null;
+            if ((side.equals("recipient") && hasId == hasAddress) || (side.equals("sender") && hasId && hasAddress)) {
+                throw new IllegalArgumentException("Provide exactly one of " + side + "AddressID or " + side + "Address");
+            }
+        }
+    }
+
     public Shipment create(Map<String, Object> body) {
         Map<String,Object> copy = new HashMap<>(body == null ? Map.of() : body);
+        validateAddresses(copy);
         Object rv = copy.get("recipientAddress");
         if (rv instanceof Map<?,?> rmap) {
             Object ph = rmap.get("phone");

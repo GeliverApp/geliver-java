@@ -87,6 +87,7 @@ public class QuickStart {
 
 ## Notlar ve İpuçları (TR)
 
+- Yeni gönderide alıcı için `recipientAddressID` veya satır içi `recipientAddress` alanlarından birini verin. Gönderici için `senderAddressID` veya `senderAddress` kullanabilirsiniz; ikisini de vermezseniz backend kurumun varsayılan gönderici adresini kullanır. Bu kural normal ve iade dahil tüm yeni gönderilerde ve tek adım etiket satın alma akışında geçerlidir.
 - `length`, `width`, `height`, `weight` istek alanları string gönderilmelidir (örn. "10.0").
 - Barkod ve etiketler teklif kabulünden (Transaction) sonra üretilir; kabulün ardından URL'lerden indirebilirsiniz.
 - Takip numarası (trackingNumber) her zaman işlemin hemen ardından oluşmayabilir; prod ortamında webhookları kullanın.
@@ -207,7 +208,6 @@ System.out.println("Cloned shipment: " + cloned.getId());
 
 // İade gönderisi oluşturma (POST /shipments/{id} + isReturn=true)
 var returned = client.shipments().createReturn(fetched.getId(), new java.util.HashMap<>() {{
-  put("providerServiceCode", "SURAT_STANDART"); // opsiyonel
   // put("count", 1); // opsiyonel, varsayılan 1
   // put("senderAddress", Map.of(...)); // opsiyonel
 }});
@@ -224,8 +224,8 @@ Not:
 
 - `shipments().createReturn(...)` iadeyi oluşturur, etiketi satın almaz ve `Shipment` döner.
 - Etiketi daha sonra satın almak isterseniz, teklif hazır olduğunda normal satın alma akışını `transactions().acceptOffer(...)` ile kullanabilirsiniz.
-- `providerServiceCode` alanı opsiyoneldir. Varsayılan olarak orijinal gönderinin sağlayıcısı kullanılır; dilerseniz bu alanı vererek değiştirebilirsiniz.
-- `senderAddress` alanı opsiyoneldir. Varsayılan olarak orijinal gönderinin alıcı adresi kullanılır; dilerseniz bu alanı vererek değiştirebilirsiniz.
+- `providerServiceCode` yalnızca etiketi hemen satın alan iade akışında kullanılır; verilmezse orijinal gönderinin taşıyıcısı seçilir. Etiketi satın almadan iade oluştururken bu alan dikkate alınmaz.
+- İade müşteriden orijinal göndericiye gider. `senderAddress` ile müşterinin kargonun alınacağı adresini değiştirebilirsiniz; verilmezse orijinal alıcı adresi kullanılır. Adresleri SDK tarafında ters çevirmeyin. Bu referanslı iade endpoint’i yalnızca inline `senderAddress` kabul eder; yeni gönderi oluşturmadaki `recipientAddress`, `recipientAddressID` ve `senderAddressID` seçenekleri burada geçerli değildir.
 - `count` alanı opsiyoneldir (varsayılan `1`). Bu fonksiyon “tek shipment için tek iade” akışı içindir; genelde `1` kullanılmalıdır.
 
 İadeyi oluşturup etiketi hemen satın almak için:
@@ -239,6 +239,12 @@ System.out.println(tx.getShipment() != null ? tx.getShipment().getId() : null); 
 ```
 
 - `transactions().createReturn(...)` iadeyi oluşturur, etiketi hemen satın alır ve `Transaction` döner.
+
+## Referans gönderi olmadan kargo bana gelecek
+
+Yeni gönderiyi `shipments().create(...)` ile `isReturn=true` göndererek oluşturun. İadede `recipientAddress` müşterinin kargonun alınacağı adresidir; `senderAddress` sizin teslim adresinizdir. Backend taşıyıcı için yönü ters çevirir. Çalıştırılabilir örnek sizin için varsayılan gönderici adresini kullanır. `test=true` yalnızca test içindir.
+
+Çalıştırılabilir örnek: `GELIVER_TOKEN=... mvn -q -Dexec.mainClass=io.geliver.examples.IncomingShipment exec:java`. Etiketi satın almak için teklif kabul akışını kullanın.
 
 ## Diğer Kaynaklar (Java)
 

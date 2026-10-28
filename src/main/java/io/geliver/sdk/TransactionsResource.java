@@ -67,6 +67,7 @@ public class TransactionsResource {
 
     private Map<String, Object> normalizeShipment(Map<String, Object> body) {
         Map<String, Object> copy = new HashMap<>(body == null ? Map.of() : body);
+        ShipmentsResource.validateAddresses(copy);
         Object rv = copy.get("recipientAddress");
         if (rv instanceof Map<?,?> rmap) {
             @SuppressWarnings("unchecked") Map<String,Object> m = new HashMap<>((Map<String,Object>)rmap);
